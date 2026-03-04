@@ -1,0 +1,10 @@
+# Default ignored files
+/../../P.E.T.E./.idea/shelf/
+/../../P.E.T.E./.idea/workspace.xml
+# Ignored default folder with query files
+/../../P.E.T.E./.idea/queries/
+# Datasource local storage ignored files
+/../../P.E.T.E./.idea/dataSources/
+/../../P.E.T.E./.idea/dataSources.local.xml
+# Editor-based HTTP Client requests
+/../../P.E.T.E./.idea/httpRequests/
