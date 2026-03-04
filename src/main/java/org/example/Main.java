@@ -50,9 +50,18 @@ public class Main extends Application { // inheritance, child(main) extends to p
         scanButton.setDisable(true); // disabled if nothing's selected
         scanButton.setOnAction(e -> startScan());
 
+        /**
+         * Decided to keep the view database button instead of replacing it
+         */
+
+        // browse files button
+        Button browseButton = new Button("Browse Files");
+        browseButton.setPrefWidth(100);
+        // browseButton.setOnAction(e -> openFileBrowser());
+
         // view database button
-        Button viewDatabaseButton = new Button("View Database");
-        viewDatabaseButton.setPrefWidth(100);
+        Button viewDatabaseButton = new Button("(Database)");
+        viewDatabaseButton.setPrefWidth(73);
         viewDatabaseButton.setOnAction(e -> openDatabaseViewer());
 
         // result label (shows progress)
@@ -69,6 +78,7 @@ public class Main extends Application { // inheritance, child(main) extends to p
                 selectButton,
                 folderLabel,
                 scanButton,
+                browseButton,
                 viewDatabaseButton,
                 resultLabel
         );
