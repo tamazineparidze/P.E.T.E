@@ -3,6 +3,7 @@ package org.example;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -17,7 +18,8 @@ public class FileBrowser {
     private static final String DB_URL = "jdbc:sqlite:pete.db"; // same db url throughout
 
     // ui components
-    private FlowPane fileGrid;
+    private FlowPane fileGrid; // flowpanes hold grid of files
+    private ComboBox<String> folderComboBox; // combobox holds dropdown to select what folder to view
 
     // data components
 
@@ -27,6 +29,13 @@ public class FileBrowser {
     public void show() {
         Stage stage = new Stage();
         stage.setTitle("P.E.T.E. - Browse Files");
+
+
+        // dropdown combobox
+        folderComboBox = new ComboBox<>();
+        folderComboBox.setPrefWidth(250);
+        folderComboBox.setPromptText("Select Folder");
+        folderComboBox.setOnAction((e) -> filter_something_someting);
 
 
         // grid representation of files with flowpane
@@ -46,6 +55,8 @@ public class FileBrowser {
          * and a label/data section on bottom
          * nothing on sides yet?
          */
+
+
         BorderPane root = new BorderPane();
         root.setCenter(scrollPane);
 
