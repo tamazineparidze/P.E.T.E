@@ -15,6 +15,12 @@ import java.util.List;
 import java.util.concurrent.Flow;
 
 
+/**
+ * Planned the look of the filebrowser. Also have an image of it in my mind that resembles the deliverable.
+ * research how to make methods work on top of the grid display being set up properly
+ */
+
+
 public class FileBrowser {
 
     private static final String DB_URL = "jdbc:sqlite:pete.db"; // same db url throughout
@@ -70,6 +76,7 @@ public class FileBrowser {
         ScrollPane scrollPane = new ScrollPane(fileGrid);
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-background-color: white;");
+
         /**
          * nothing on sides yet?
          */
@@ -88,11 +95,9 @@ public class FileBrowser {
         root.setCenter(scrollPane);
         root.setBottom(statusLabel);
 
-
         /**
          * data?
          */
-
 
         // layout & scene -- change from dbviewer.java and change db viewer java, this will be what user sees so
         // make it prettier than the other one
