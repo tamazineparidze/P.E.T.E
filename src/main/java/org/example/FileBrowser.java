@@ -11,8 +11,13 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.Flow;
 
 
@@ -96,11 +101,6 @@ public class FileBrowser {
 
         // display the files in the grid i have planned
 
-
-
-
-
-
         // layout & scene -- change from dbviewer.java and change db viewer java
         // this will be what user sees, so make it prettier than the other one
 
@@ -113,6 +113,18 @@ public class FileBrowser {
      * loads folders from database and fills the dropdown selection
      */
     private void loadFolders() {
+
+        folderMap = new HashMap<>(); // stores folderpath as string and folderid as integer
+
+        //sql to get all folders alphabetically
+        String sql = "SELECT folder_id, path_name FROM folder ORDER BY path_name";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);)
+
+
+    } catch
+
+
 
     }
 
