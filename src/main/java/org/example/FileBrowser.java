@@ -12,6 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Flow;
 
 
@@ -19,7 +20,6 @@ import java.util.concurrent.Flow;
  * Planned the look of the filebrowser. Also have an image of it in my mind that resembles the deliverable.
  * research how to make methods work on top of the grid display being set up properly
  */
-
 
 public class FileBrowser {
 
@@ -34,7 +34,8 @@ public class FileBrowser {
     /**
      * figure out how how it loads files from db and then is filtered in memory
      */
-    private List<FileRecord> fileRecords;
+    private Map<String, Integer> folderMap; //maps folder path to file id
+    private List<FileRecord> fileRecords; //list of every file from database (loaded once)
 
     /**
      * opens the file browser window
@@ -43,16 +44,15 @@ public class FileBrowser {
         Stage stage = new Stage();
         stage.setTitle("P.E.T.E. - Browse Files");
 
-        /**
-         * Top dropdown fodler area
-         */
+        /** top bar - folder dropdown */
 
-        Label folderLabel = new Label("Folder:");
+        Label folderLabel = new Label("Folder:"); //label next to dropdown
 
-        // dropdown combobox
+        // dropdown combobox (dropdown menu itself)
         folderComboBox = new ComboBox<>();
         folderComboBox.setPrefWidth(250);
         folderComboBox.setPromptText("Select Folder");
+        //when user selects different folder, calls filterByFolder
         folderComboBox.setOnAction((e) -> filterByFolder); // make a folder filterer
 
         HBox topHBox = new HBox();
@@ -60,9 +60,7 @@ public class FileBrowser {
         topHBox.setAlignment(Pos.CENTER); // may change to right
         topHBox.getChildren().add(folderLabel, folderComboBox);
 
-        /**
-         * middle file grid area
-         */
+        /** middle - filegrid main content area */
 
         // grid representation of files with flowpane
         fileGrid = new FlowPane();
@@ -77,37 +75,53 @@ public class FileBrowser {
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-background-color: white;");
 
-        /**
-         * nothing on sides yet?
-         */
+        /** bottom - status / info */
 
-        /**
-         * bottom data / status spot
-         */
 
         statusLabel = new Label("Loading...");
         statusLabel.setStyle("-fx-font-size:11px; fx-text-fill: gray;");
         statusLabel.setPadding(new Insets(10));
 
-
+        //layout for borderpane and how the filebrowser will be divided
         BorderPane root = new BorderPane();
         root.setTop(topHBox);
         root.setCenter(scrollPane);
         root.setBottom(statusLabel);
 
-        /**
-         * data?
-         */
+        /** loading data from database */
 
-        // layout & scene -- change from dbviewer.java and change db viewer java, this will be what user sees so
-        // make it prettier than the other one
+        // load folders list for the combobox dropdown
+
+        // load files for from database
+
+        // display the files in the grid i have planned
+
+
+
+
+
+
+        // layout & scene -- change from dbviewer.java and change db viewer java
+        // this will be what user sees, so make it prettier than the other one
 
         Scene scene = new Scene(root, 900, 600);
         stage.setScene(scene);
         stage.show();
     }
 
+    /**
+     * loads folders from database and fills the dropdown selection
+     */
+    private void loadFolders() {
+
+    }
+
+    /**
+     * filters files based on the selected dropdown folder
+     */
+
     private void filterByFolder() {
         // --
     }
+
 }
