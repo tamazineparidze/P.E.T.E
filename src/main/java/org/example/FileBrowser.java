@@ -14,6 +14,8 @@ import javafx.stage.Stage;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,7 +121,20 @@ public class FileBrowser {
         //sql to get all folders alphabetically
         String sql = "SELECT folder_id, path_name FROM folder ORDER BY path_name";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL);)
+        // try database connection, sql executor, and query results - pasted from dbviewer.java
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            /**
+             *  FIGURE OUT WHY THERE IS AN ERROR HERE.
+             *  and how to map
+             */
+
+            // add all files option
+            folderComboBox.getItems().add("All Files");
+
+
+
 
 
     } catch
