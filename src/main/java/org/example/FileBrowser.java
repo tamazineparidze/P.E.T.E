@@ -45,7 +45,6 @@ public class FileBrowser {
         Stage stage = new Stage();
         stage.setTitle("P.E.T.E. - Browse Files");
 
-        /** top bar - folder dropdown */
         Label folderLabel = new Label("Folder:"); //label next to dropdown
 
         // dropdown combobox (dropdown menu itself)
@@ -57,10 +56,9 @@ public class FileBrowser {
 
         HBox topHBox = new HBox();
         topHBox.setPadding(new Insets(10));
-        topHBox.setAlignment(Pos.CENTER); // may change to right
+        topHBox.setAlignment(Pos.CENTER);
         // topHBox.getChildren().add(folderLabel, folderComboBox);
 
-        /** middle - filegrid main content area */
         // grid representation of files with flowpane
         fileGrid = new FlowPane();
 
@@ -74,7 +72,7 @@ public class FileBrowser {
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-background-color: white;");
 
-        /** bottom - status / info */
+        // bottom - status pane
         statusLabel = new Label("Loading...");
         statusLabel.setStyle("-fx-font-size:11px; fx-text-fill: gray;");
         statusLabel.setPadding(new Insets(10));
@@ -149,19 +147,44 @@ public class FileBrowser {
         allFiles = new ArrayList<>();
 
         // sql join to combine file and folder info into one query
-        /**
-         * FIGURE OUT HOW
-         */
         String sql = """
-                
-                
-                
-                """
+                SELECT
+                    file.file_id,
+                    file.file_name,
+                    file.file_extension,
+                    file.file_size,
+                    file.date_modified,
+                    folder.path_name,
+                    folder.folder_id,
+                FROM file
+                JOIN folder ON file.folder_id = folder.folder_id
+                ORDER BY file.file_name
+                """;
 
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+                 // loop through every row in resultset
+                 while (rs.next()) {
+                     // create filerecord from database
+                     FileRecord record = new FileRecord(
+                             rs.getInt("file_id"),
+                             rs.getString("file_name"),
+                             rs.getString("file_ext"),
+                             rs.getLong("file_size"),
+                             rs.getLong("date_modified"),
+                             rs.getString("path_name")
+                             );
+                     // add to list
+                     allFiles.add(record);
+                 }
 
+                 System.out.println(" Loaded " + allFiles.size() + " files");
+        } catch (Exception e) {
+                 System.out.println("Error loading file browser");
+                 e.printStackTrace();
+        }
     }
-
-
     /**
      * filters files based on the selected dropdown folder
      */

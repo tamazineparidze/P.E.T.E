@@ -57,7 +57,7 @@ public class Main extends Application { // inheritance, child(main) extends to p
         // browse files button
         Button browseButton = new Button("Browse Files");
         browseButton.setPrefWidth(100);
-        // browseButton.setOnAction(e -> openFileBrowser());
+        browseButton.setOnAction(e -> openFileBrowser());
 
         // view database button
         Button viewDatabaseButton = new Button("(Database)");
@@ -146,9 +146,14 @@ public class Main extends Application { // inheritance, child(main) extends to p
     /**
      * opens database viewer window
      */
-    private void openDatabaseViewer() {  // create dbviewer object and show it
+    private void openDatabaseViewer() {
         DatabaseViewer viewer = new DatabaseViewer();
         viewer.show();
+    }
+
+    private void openFileBrowser() {
+        FileBrowser fileBrowser = new FileBrowser();
+        fileBrowser.show();
     }
 
     public static void main(String[] args) {
