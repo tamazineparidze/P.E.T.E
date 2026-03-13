@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.Flow;
 
 
 /**
@@ -92,7 +91,7 @@ public class FileBrowser {
         loadAllFiles();
 
         // display the files in the grid i have planned
-        // displayFiles
+        displayFiles(allFiles);
 
         // layout & scene -- change from dbviewer.java and change db viewer java
         // this will be what user sees, so make it prettier than the other one
@@ -126,7 +125,6 @@ public class FileBrowser {
             while (rs.next()) {
                 int folderId = rs.getInt("folder_id");
                 String folderPath = rs.getString("path_name");
-
                 folderComboBox.getItems().add(folderPath);
                 folderMap.put(folderPath, folderId);
             }
@@ -160,11 +158,10 @@ public class FileBrowser {
                 JOIN folder ON file.folder_id = folder.folder_id
                 ORDER BY file.file_name
                 """;
-
+        // same as before
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-                 // loop through every row in resultset
                  while (rs.next()) {
                      // create filerecord from database
                      FileRecord record = new FileRecord(
@@ -175,7 +172,7 @@ public class FileBrowser {
                              rs.getLong("date_modified"),
                              rs.getString("path_name")
                              );
-                     // add to list
+
                      allFiles.add(record);
                  }
 
@@ -185,12 +182,55 @@ public class FileBrowser {
                  e.printStackTrace();
         }
     }
+
     /**
      * filters files based on the selected dropdown folder
      */
 
     private void filterByFolder() {
-        // --
+        // get currently selected folder from dropdown that returns whatever user selects
+        String selectedFolder = folderComboBox.getValue();
+
+        // check if all files is selected and show everything if so, else filter specifically
+        if (selectedFolder.equals("All Files")) {
+            displayFiles(allFiles);
+        } else {
+            // make empty list for filtered files
+            List<FileRecord> filteredFiles = new ArrayList<>();
+
+            //loop through all files and check if file folder matches select folder
+            for (FileRecord file : allFiles) {
+                if (file.getFolderPath().equals(selectedFolder)) {
+                    filteredFiles.add(file);
+                }
+            }
+            //display only the filtered ones
+            displayFiles(filteredFiles);
+        }
+    }
+
+    /**
+     * filters files in grid
+     */
+
+    private void displayFiles(List<FileRecord> files) {
+        fileGrid.getChildren().clear(); //clear previous cards
+        //create card for each file to add to grid
+        for (FileRecord file : files) {
+
+            VBox card = createFileCard(file);
+        }
+
+    }
+
+    /**
+     * Create a visul card for singular file
+     */
+
+    private VBox createFileCard(FileRecord file) {
+        VBox card = new VBox(8);
+
+        return card;
     }
 }
 
