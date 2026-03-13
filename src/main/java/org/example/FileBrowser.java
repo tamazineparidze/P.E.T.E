@@ -12,14 +12,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.sql.*;
+import java.util.*;
 import java.util.concurrent.Flow;
 
 
@@ -39,10 +33,10 @@ public class FileBrowser {
 
     // data components
     /**
-     * figure out how how it loads files from db and then is filtered in memory
+     * figure out how it loads files from db and then is filtered in memory
      */
     private Map<String, Integer> folderMap; //maps folder path to file id
-    private List<FileRecord> fileRecords; //list of every file from database (loaded once)
+    private List<FileRecord> allFiles; //list of every file from database (loaded once)
 
     /**
      * opens the file browser window
@@ -52,7 +46,6 @@ public class FileBrowser {
         stage.setTitle("P.E.T.E. - Browse Files");
 
         /** top bar - folder dropdown */
-
         Label folderLabel = new Label("Folder:"); //label next to dropdown
 
         // dropdown combobox (dropdown menu itself)
@@ -60,15 +53,14 @@ public class FileBrowser {
         folderComboBox.setPrefWidth(250);
         folderComboBox.setPromptText("Select Folder");
         //when user selects different folder, calls filterByFolder
-        folderComboBox.setOnAction((e) -> filterByFolder); // make a folder filterer
+        // folderComboBox.setOnAction((e) -> filterByFolder); // make a folder filterer
 
         HBox topHBox = new HBox();
         topHBox.setPadding(new Insets(10));
         topHBox.setAlignment(Pos.CENTER); // may change to right
-        topHBox.getChildren().add(folderLabel, folderComboBox);
+        // topHBox.getChildren().add(folderLabel, folderComboBox);
 
         /** middle - filegrid main content area */
-
         // grid representation of files with flowpane
         fileGrid = new FlowPane();
 
@@ -83,8 +75,6 @@ public class FileBrowser {
         scrollPane.setStyle("-fx-background-color: white;");
 
         /** bottom - status / info */
-
-
         statusLabel = new Label("Loading...");
         statusLabel.setStyle("-fx-font-size:11px; fx-text-fill: gray;");
         statusLabel.setPadding(new Insets(10));
@@ -98,14 +88,16 @@ public class FileBrowser {
         /** loading data from database */
 
         // load folders list for the combobox dropdown
+        loadFolders();
 
         // load files for from database
+        loadAllFiles();
 
         // display the files in the grid i have planned
+        // displayFiles
 
         // layout & scene -- change from dbviewer.java and change db viewer java
         // this will be what user sees, so make it prettier than the other one
-
         Scene scene = new Scene(root, 900, 600);
         stage.setScene(scene);
         stage.show();
@@ -125,23 +117,50 @@ public class FileBrowser {
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            /**
-             *  FIGURE OUT WHY THERE IS AN ERROR HERE.
-             *  and how to map
-             */
 
             // add all files option
             folderComboBox.getItems().add("All Files");
 
+            //map all files to
+            folderMap.put("All Files", -1); //-1 means show all
 
+            //loop through the database
+            while (rs.next()) {
+                int folderId = rs.getInt("folder_id");
+                String folderPath = rs.getString("path_name");
 
+                folderComboBox.getItems().add(folderPath);
+                folderMap.put(folderPath, folderId);
+            }
 
+            folderComboBox.getSelectionModel().selectFirst();
 
-    } catch
+        } catch (Exception e) {
+            System.out.println("Error loading file browser");
+            e.printStackTrace();
+        }
+    }
 
+    /**
+     * load files from database & join file and folder tables
+     */
+
+    private void loadAllFiles() {
+        allFiles = new ArrayList<>();
+
+        // sql join to combine file and folder info into one query
+        /**
+         * FIGURE OUT HOW
+         */
+        String sql = """
+                
+                
+                
+                """
 
 
     }
+
 
     /**
      * filters files based on the selected dropdown folder
@@ -150,5 +169,5 @@ public class FileBrowser {
     private void filterByFolder() {
         // --
     }
-
 }
+
