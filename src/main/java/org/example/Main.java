@@ -1,4 +1,4 @@
-// javafx UI, runs when pete is launched
+// 2.18 - filecards update
 
 package org.example;
 
@@ -85,7 +85,7 @@ public class Main extends Application { // inheritance, child(main) extends to p
 
         // scene & stage
         Scene scene = new Scene(root, 500, 400);
-        primaryStage.setTitle("P.E.T.E. - MVP1.8");
+        primaryStage.setTitle("P.E.T.E. - MVP2.18");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

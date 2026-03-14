@@ -1,4 +1,3 @@
-// 2.17 - found & fixed bugs!
 package org.example;
 
 import javafx.geometry.Insets;
@@ -11,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.sql.*;
@@ -215,20 +215,42 @@ public class FileBrowser {
         fileGrid.getChildren().clear(); //clear previous cards
         //create card for each file to add to grid
         for (FileRecord file : files) {
-
+            //return a vbox containing file parameters and add to flowpane
             VBox card = createFileCard(file);
+            fileGrid.getChildren().add(card);
         }
 
+        //status update
+        String folderText = folderComboBox.getValue();
+        statusLabel.setText("Showing " + files.size() + " files from: " + folderText);
     }
 
     /**
-     * Create a visul card for singular file
+     * Create a visual card for singular file returns vbox w paramteres
      */
 
     private VBox createFileCard(FileRecord file) {
-        VBox card = new VBox(8);
+        VBox card = new VBox(10);
+        card.setAlignment(Pos.CENTER);
+        card.setPrefSize(100,130);
+        card.setMaxSize(100,130 ); // try with and without the top line
+
+        //css for card?
+
+        //filename truncated if too long
+        String displayName = file.getFileName();
+        if (displayName.length() > 14) {
+            displayName = displayName.substring(0, 12) + "...";
+        }
+        //css ?
+        Label nameLabel = new Label(displayName);
+        nameLabel.setTextAlignment(TextAlignment.CENTER);
 
         return card;
     }
+
+    /**
+     * FIGURE OUT HOW TO DOUBLE CLICK OR HOVER
+     */
 }
 
