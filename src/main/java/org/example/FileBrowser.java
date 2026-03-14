@@ -1,3 +1,4 @@
+// 2.17 - found & fixed bugs!
 package org.example;
 
 import javafx.geometry.Insets;
@@ -44,19 +45,18 @@ public class FileBrowser {
         Stage stage = new Stage();
         stage.setTitle("P.E.T.E. - Browse Files");
 
-        Label folderLabel = new Label("Folder:"); //label next to dropdown
+        Label folderLabel = new Label("Folder: "); //label next to dropdown
 
         // dropdown combobox (dropdown menu itself)
         folderComboBox = new ComboBox<>();
-        folderComboBox.setPrefWidth(250);
+        folderComboBox.setPrefWidth(350);
         folderComboBox.setPromptText("Select Folder");
-        //when user selects different folder, calls filterByFolder
-        // folderComboBox.setOnAction((e) -> filterByFolder); // make a folder filterer
+        folderComboBox.setOnAction((e) -> filterByFolder()); // make a folder filterer
 
         HBox topHBox = new HBox();
         topHBox.setPadding(new Insets(10));
         topHBox.setAlignment(Pos.CENTER);
-        // topHBox.getChildren().add(folderLabel, folderComboBox);
+        topHBox.getChildren().addAll(folderLabel, folderComboBox);
 
         // grid representation of files with flowpane
         fileGrid = new FlowPane();
@@ -81,8 +81,6 @@ public class FileBrowser {
         root.setTop(topHBox);
         root.setCenter(scrollPane);
         root.setBottom(statusLabel);
-
-        /** loading data from database */
 
         // load folders list for the combobox dropdown
         loadFolders();
