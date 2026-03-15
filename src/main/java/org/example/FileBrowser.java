@@ -16,25 +16,17 @@ import javafx.stage.Stage;
 import java.sql.*;
 import java.util.*;
 
-
 /**
- * Planned the look of the filebrowser. Also have an image of it in my mind that resembles the deliverable.
- * research how to make methods work on top of the grid display being set up properly
+ * grid view for browsing the files that were indexed filtered by folder
  */
-
 public class FileBrowser {
 
     private static final String DB_URL = "jdbc:sqlite:pete.db"; // same db url throughout
-
     // ui components
     private FlowPane fileGrid; // flowpanes hold grid of files
     private ComboBox<String> folderComboBox; // combobox holds dropdown to select what folder to view
     private Label statusLabel;
-
     // data components
-    /**
-     * figure out how it loads files from db and then is filtered in memory
-     */
     private Map<String, Integer> folderMap; //maps folder path to file id
     private List<FileRecord> allFiles; //list of every file from database (loaded once)
 
@@ -44,14 +36,13 @@ public class FileBrowser {
     public void show() {
         Stage stage = new Stage();
         stage.setTitle("P.E.T.E. - Browse Files");
-
         Label folderLabel = new Label("Folder: "); //label next to dropdown
 
         // dropdown combobox (dropdown menu itself)
         folderComboBox = new ComboBox<>();
         folderComboBox.setPrefWidth(350);
         folderComboBox.setPromptText("Select Folder");
-        folderComboBox.setOnAction((e) -> filterByFolder()); // make a folder filterer
+        folderComboBox.setOnAction((e) -> filterByFolder());
 
         HBox topHBox = new HBox();
         topHBox.setPadding(new Insets(10));
@@ -73,7 +64,7 @@ public class FileBrowser {
 
         // bottom - status pane
         statusLabel = new Label("Loading...");
-        statusLabel.setStyle("-fx-font-size:11px; fx-text-fill: gray;");
+        statusLabel.setStyle("-fx-font-size:11px; fx-text-fill: gray;");  /** change default css later */
         statusLabel.setPadding(new Insets(10));
 
         //layout for borderpane and how the filebrowser will be divided
@@ -91,8 +82,7 @@ public class FileBrowser {
         // display the files in the grid i have planned
         displayFiles(allFiles);
 
-        // layout & scene -- change from dbviewer.java and change db viewer java
-        // this will be what user sees, so make it prettier than the other one
+        /** change default css later */
         Scene scene = new Scene(root, 900, 600);
         stage.setScene(scene);
         stage.show();
@@ -138,7 +128,6 @@ public class FileBrowser {
     /**
      * load files from database & join file and folder tables
      */
-
     private void loadAllFiles() {
         allFiles = new ArrayList<>();
 
@@ -184,7 +173,6 @@ public class FileBrowser {
     /**
      * filters files based on the selected dropdown folder
      */
-
     private void filterByFolder() {
         // get currently selected folder from dropdown that returns whatever user selects
         String selectedFolder = folderComboBox.getValue();
@@ -210,7 +198,6 @@ public class FileBrowser {
     /**
      * filters files in grid
      */
-
     private void displayFiles(List<FileRecord> files) {
         fileGrid.getChildren().clear(); //clear previous cards
         //create card for each file to add to grid
@@ -228,23 +215,29 @@ public class FileBrowser {
     /**
      * Create a visual card for singular file returns vbox w paramteres
      */
-
     private VBox createFileCard(FileRecord file) {
         VBox card = new VBox(10);
         card.setAlignment(Pos.CENTER);
         card.setPrefSize(100,130);
         card.setMaxSize(100,130 ); // try with and without the top line
-
-        //css for card?
+        /** change default css later */
 
         //filename truncated if too long
         String displayName = file.getFileName();
         if (displayName.length() > 14) {
             displayName = displayName.substring(0, 12) + "...";
         }
-        //css ?
+        /** change default css later */
         Label nameLabel = new Label(displayName);
         nameLabel.setTextAlignment(TextAlignment.CENTER);
+
+        //filesize
+        Label sizeLabel = new Label(file.getFileSize());
+
+        //extensions
+        Label extLabel = new Label(file.getFileExt());
+
+        card.getChildren().addAll(nameLabel, sizeLabel, extLabel);
 
         return card;
     }
