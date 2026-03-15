@@ -216,9 +216,9 @@ public class FileBrowser {
         card.setPrefSize(86,115);
         card.setMaxSize(86,115 );
         card.setStyle(
-                "-fx-border-color: #cccccc; "
+                "-fx-border-color: #CCCCCC; "
                 + "-fx-border-width: 1px; "
-                + "-fx-background-color: white; "
+                + "-fx-background-color: #FFFFFF; "
                 + "-fx-padding: 8"
         );
 
@@ -242,11 +242,46 @@ public class FileBrowser {
 
         card.getChildren().addAll(nameLabel, sizeLabel, extLabel);
 
+        //when mouse enters card area
+        card.setOnMouseEntered(e -> {
+            card.setStyle(
+                    "-fx-border-color: #329AFB; " +
+                            "-fx-border-width: 2px; " +
+                            "-fx-background-color: #F5FDFF; " +
+                            "-fx-padding: 8;"
+            );
+            card.setCursor(javafx.scene.Cursor.HAND);
+        });
+
+        //when mouse leaves card area
+        card.setOnMouseExited(e -> {
+            card.setStyle(
+                    "-fx-border-color: #CCCCCC; " +
+                            "-fx-border-width: 1px; " +
+                            "-fx-background-color: #FFFFFF; " +
+                            "-fx-padding: 8;"
+            );
+            card.setCursor(javafx.scene.Cursor.DEFAULT);
+        });
+
+        //double click to open
+        card.setOnMouseClicked(e -> {
+            //get double click info
+            if (e.getClickCount() == 2) {
+                // openFile(file); // make an openfile method that opens the file
+            }
+        });
+
         return card;
     }
 
+    private void openFile() {
+
+    }
+
     /**
-     * FIGURE OUT HOW TO DOUBLE CLICK OR HOVER
+     * FIGURE OUT HOW TO OPEN THE FILE WHEN DOUBLECLICKED
+     * fixed the background color bug!
      */
 }
 
