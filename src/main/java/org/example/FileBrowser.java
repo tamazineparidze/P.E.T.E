@@ -136,11 +136,11 @@ public class FileBrowser {
                 SELECT
                     file.file_id,
                     file.file_name,
-                    file.file_extension,
+                    file.file_ext,
                     file.file_size,
                     file.date_modified,
                     folder.path_name,
-                    folder.folder_id,
+                    folder.folder_id
                 FROM file
                 JOIN folder ON file.folder_id = folder.folder_id
                 ORDER BY file.file_name
