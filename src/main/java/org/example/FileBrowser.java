@@ -41,20 +41,19 @@ public class FileBrowser {
         // dropdown combobox (dropdown menu itself)
         folderComboBox = new ComboBox<>();
         folderComboBox.setPrefWidth(350);
-        folderComboBox.setPromptText("Select Folder");
         folderComboBox.setOnAction((e) -> filterByFolder());
 
         HBox topHBox = new HBox();
-        topHBox.setPadding(new Insets(10));
-        topHBox.setAlignment(Pos.CENTER);
+        topHBox.setPadding(new Insets(12));
+        topHBox.setAlignment(Pos.CENTER_LEFT);
         topHBox.getChildren().addAll(folderLabel, folderComboBox);
 
         // grid representation of files with flowpane
         fileGrid = new FlowPane();
 
-        fileGrid.setHgap(10);
-        fileGrid.setVgap(10);
-        fileGrid.setPadding(new Insets(10));
+        fileGrid.setHgap(8);
+        fileGrid.setVgap(8);
+        fileGrid.setPadding(new Insets(8));
         fileGrid.setAlignment(Pos.TOP_LEFT);
 
         // a scroller to scroll through many files with a white background
@@ -64,8 +63,8 @@ public class FileBrowser {
 
         // bottom - status pane
         statusLabel = new Label("Loading...");
-        statusLabel.setStyle("-fx-font-size:11px; fx-text-fill: gray;");  /** change default css later */
-        statusLabel.setPadding(new Insets(10));
+        statusLabel.setStyle("-fx-font-size:11px; fx-text-fill: gray;");
+        statusLabel.setPadding(new Insets(12));
 
         //layout for borderpane and how the filebrowser will be divided
         BorderPane root = new BorderPane();
@@ -73,17 +72,12 @@ public class FileBrowser {
         root.setCenter(scrollPane);
         root.setBottom(statusLabel);
 
-        // load folders list for the combobox dropdown
+        // load folders list for the combobox dropdown, load files from database, and display files in the grid
         loadFolders();
-
-        // load files for from database
         loadAllFiles();
-
-        // display the files in the grid i have planned
         displayFiles(allFiles);
 
-        /** change default css later */
-        Scene scene = new Scene(root, 900, 600);
+        Scene scene = new Scene(root, 1150, 800);
         stage.setScene(scene);
         stage.show();
     }
@@ -164,6 +158,7 @@ public class FileBrowser {
                  }
 
                  System.out.println(" Loaded " + allFiles.size() + " files");
+
         } catch (Exception e) {
                  System.out.println("Error loading file browser");
                  e.printStackTrace();
@@ -216,26 +211,34 @@ public class FileBrowser {
      * Create a visual card for singular file returns vbox w paramteres
      */
     private VBox createFileCard(FileRecord file) {
-        VBox card = new VBox(10);
+        VBox card = new VBox(8);
         card.setAlignment(Pos.CENTER);
-        card.setPrefSize(100,130);
-        card.setMaxSize(100,130 ); // try with and without the top line
-        /** change default css later */
+        card.setPrefSize(86,115);
+        card.setMaxSize(86,115 );
+        card.setStyle(
+                "-fx-border-color: #cccccc; "
+                + "-fx-border-width: 1px; "
+                + "-fx-background-color: white; "
+                + "-fx-padding: 8"
+        );
 
         //filename truncated if too long
         String displayName = file.getFileName();
-        if (displayName.length() > 14) {
-            displayName = displayName.substring(0, 12) + "...";
+        if (displayName.length() > 10) {
+            displayName = displayName.substring(0, 8) + "...";
         }
-        /** change default css later */
         Label nameLabel = new Label(displayName);
         nameLabel.setTextAlignment(TextAlignment.CENTER);
+        nameLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
+        nameLabel.setWrapText(true);
 
         //filesize
         Label sizeLabel = new Label(file.getFileSize());
+        sizeLabel.setStyle("-fx-font-size: 11px;  -fx-text-fill: gray;");
 
         //extensions
         Label extLabel = new Label(file.getFileExt());
+        extLabel.setStyle("-fx-font-size: 10px;");
 
         card.getChildren().addAll(nameLabel, sizeLabel, extLabel);
 

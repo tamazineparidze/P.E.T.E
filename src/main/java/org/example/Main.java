@@ -1,4 +1,4 @@
-// 2.20 - fixed the filegrid not showing.
+// 2.21 - touched up the visuals.
 
 package org.example;
 
