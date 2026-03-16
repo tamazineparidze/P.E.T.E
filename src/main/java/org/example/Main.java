@@ -1,4 +1,4 @@
-// 2.24 - started thumbnails...
+// 2.25 - continuing thumbnails
 
 package org.example;
 

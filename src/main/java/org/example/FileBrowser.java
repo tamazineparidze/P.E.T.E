@@ -318,14 +318,22 @@ public class FileBrowser {
      * add thumbnail or some kind of symbol to finish it off.
      */
     private ImageView getThumbnail(FileRecord file) {
-
         // check if it's an image
         String ext = file.getFileExt();
-
         ext = ext.toLowerCase();
-        boolean isImage = ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png") || ext.equals("gif");
-        + || ext.equals("raw") || ext.equals("nef") || ext.equals("raf");
 
+        boolean isImage = ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png") || ext.equals("gif") || ext.equals("raw") || ext.equals("nef") || ext.equals("raf");
+        // if image build path and check cache
+        String fullPath = file.getFolderPath() + File.separator + file.getFileName();
+        Image cachedImage = thumbnailCache.get(fullPath);
+        if (cachedImage != null) { // if in cache return
+            ImageView imageView = new ImageView(cachedImage);
+            imageView.setFitHeight(--);
+            imageView.setFitWidth(--);
+            return imageView;
+        }
+        // if not in cache load it
+        // figure out how to load it
     }
 
 }
