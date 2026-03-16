@@ -13,8 +13,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
+import java.awt.*;
+import java.io.File;
 import java.sql.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * grid view for browsing the files that were indexed filtered by folder
@@ -268,20 +271,50 @@ public class FileBrowser {
         card.setOnMouseClicked(e -> {
             //get double click info
             if (e.getClickCount() == 2) {
-                // openFile(file); // make an openfile method that opens the file
+                openFile(file); // method below
             }
         });
 
         return card;
     }
 
-    private void openFile() {
+    /**
+     * Opens file using default application
+     */
+    private void openFile(FileRecord file) {
+        try {
+            // combine filepath and filename and create file object
+            String fullPath = file.getFolderPath() + File.separator + file.getFileName();
+            File fileToOpen = new File(fullPath);
+
+            // checks if file exists
+            if (!fileToOpen.exists()) {
+                System.out.println("File " + fullPath + " does not exist");
+                statusLabel.setText("File " + fullPath + " not found");
+                return;
+            }
+
+            // checks if desktop default app is supported and opens with default app
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().open(fileToOpen);
+
+                System.out.println("Opened " + fullPath + " successfully");
+            } else  {
+                System.out.println("Opening " + fullPath + " not supported");
+            }
+
+        } catch (Exception e) { // cant open / error
+            System.out.println("Error opening: " + file.getFileName());
+            e.printStackTrace();
+            statusLabel.setText("Error opening: " + file.getFileName());
+        }
+
 
     }
 
     /**
-     * FIGURE OUT HOW TO OPEN THE FILE WHEN DOUBLECLICKED
-     * fixed the background color bug!
+     * FIXED THE BUGS!
+     * add thumbnail or some kind of symbol to finish it off.
      */
 }
 

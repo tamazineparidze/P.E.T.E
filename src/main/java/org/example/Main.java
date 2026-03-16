@@ -1,4 +1,4 @@
-// 2.22 - fixed background colors and started openFile method
+// 2.23 - openFile complete!
 
 package org.example;
 
@@ -164,9 +164,3 @@ public class Main extends Application { // inheritance, child(main) extends to p
         launch(args); // launch favafx
     }
 }
-
-/**
- * For me: figure out more in depth on how threading works. still confsued.
- * Labmda expressions will be something I'll need so figure that out too well.
- * Think about css and making it look proper
- */
