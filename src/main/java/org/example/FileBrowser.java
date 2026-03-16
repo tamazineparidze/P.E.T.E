@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -32,6 +34,7 @@ public class FileBrowser {
     // data components
     private Map<String, Integer> folderMap; //maps folder path to file id
     private List<FileRecord> allFiles; //list of every file from database (loaded once)
+    private Map<String, Image> thumbnailCache; // one time delay of opening images then its in memory
 
     /**
      * opens the file browser window
@@ -40,6 +43,8 @@ public class FileBrowser {
         Stage stage = new Stage();
         stage.setTitle("P.E.T.E. - Browse Files");
         Label folderLabel = new Label("Folder: "); //label next to dropdown
+
+        thumbnailCache = new HashMap<>(); //initialize thumbnailscache
 
         // dropdown combobox (dropdown menu itself)
         folderComboBox = new ComboBox<>();
@@ -308,13 +313,20 @@ public class FileBrowser {
             e.printStackTrace();
             statusLabel.setText("Error opening: " + file.getFileName());
         }
+    }
+    /**
+     * add thumbnail or some kind of symbol to finish it off.
+     */
+    private ImageView getThumbnail(FileRecord file) {
 
+        // check if it's an image
+        String ext = file.getFileExt();
+
+        ext = ext.toLowerCase();
+        boolean isImage = ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png") || ext.equals("gif");
+        + || ext.equals("raw") || ext.equals("nef") || ext.equals("raf");
 
     }
 
-    /**
-     * FIXED THE BUGS!
-     * add thumbnail or some kind of symbol to finish it off.
-     */
 }
 

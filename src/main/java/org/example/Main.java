@@ -1,4 +1,4 @@
-// 2.23 - openFile complete!
+// 2.24 - started thumbnails...
 
 package org.example;
 
