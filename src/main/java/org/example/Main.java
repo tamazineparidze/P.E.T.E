@@ -1,4 +1,4 @@
-// 2.25 - continuing thumbnails
+// 2.26 - thumbnails progress
 
 package org.example;
 

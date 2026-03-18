@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.sql.*;
 import java.util.*;
 import java.util.List;
@@ -328,12 +329,38 @@ public class FileBrowser {
         Image cachedImage = thumbnailCache.get(fullPath);
         if (cachedImage != null) { // if in cache return
             ImageView imageView = new ImageView(cachedImage);
-            imageView.setFitHeight(--);
-            imageView.setFitWidth(--);
+            imageView.setFitHeight(70);
+            imageView.setFitWidth(70);
+            imageView.setPreserveRatio(true);
             return imageView;
         }
         // if not in cache load it
         // figure out how to load it
+        try {
+            File imageFile = new File(fullPath);
+            // does it not exist?
+            if (!imageFile.exists()) {
+                System.out.println("File " + fullPath + " does not exist");
+                return null;
+            }
+            // checks if file size is more than 50mb (may change depending on how slow/fast it is and ram usage)
+            long fileSizeBytes = imageFile.length();
+            long maxSize = 50 * 1024 * 1024;
+            if (fileSizeBytes > maxSize) {
+                System.out.println("File " + fullPath + " is too large");
+                return null;
+            }
+            //load the image
+            FileInputStream fileInputStream = new FileInputStream(imageFile);
+            /**
+             * ???
+             */
+            fileInputStream.close();
+
+        }
+        catch (Exception e) {
+
+        }
     }
 
 }
