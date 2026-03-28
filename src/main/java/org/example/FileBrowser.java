@@ -231,6 +231,8 @@ public class FileBrowser {
                 + "-fx-padding: 8"
         );
 
+        ImageView thumbnail = getThumbnail(file);
+
         //filename truncated if too long
         String displayName = file.getFileName();
         if (displayName.length() > 10) {
@@ -249,7 +251,7 @@ public class FileBrowser {
         Label extLabel = new Label(file.getFileExt());
         extLabel.setStyle("-fx-font-size: 10px;");
 
-        card.getChildren().addAll(nameLabel, sizeLabel, extLabel);
+        card.getChildren().addAll(thumbnail, nameLabel, sizeLabel, extLabel);
 
         //when mouse enters card area
         card.setOnMouseEntered(e -> {
@@ -352,14 +354,25 @@ public class FileBrowser {
             }
             //load the image
             FileInputStream fileInputStream = new FileInputStream(imageFile);
-            /**
-             * ???
-             */
+            // create an iamge with auto resize
+            Image thumbnail = new Image(fileInputStream, 86, 86, true, true);
             fileInputStream.close();
+            //cache the thumbnail
+            thumbnailCache.put(fullPath, thumbnail);
+            // create and return imageview
+            ImageView imageView = new ImageView();
+            imageView.setFitHeight(86);
+            imageView.setFitWidth(86);
+            imageView.setPreserveRatio(true);
+            // add depth with css??
+
+            return imageView;
 
         }
         catch (Exception e) {
-
+            System.out.println("Error loading thumbnail for: " + fullPath);
+            e.printStackTrace();
+            return null;
         }
     }
 

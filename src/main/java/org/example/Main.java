@@ -1,4 +1,4 @@
-// 2.26 - thumbnails progress
+// 2.27 - why is it not working....
 
 package org.example;
 
