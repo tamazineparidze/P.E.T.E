@@ -37,6 +37,7 @@ public class FileBrowser {
     private List<FileRecord> allFiles; //list of every file from database (loaded once)
     private Map<String, Image> thumbnailCache; // one time delay of opening images then its in memory
 
+    private int missingFileCount = 0; //track missing files so it doesnt take a year to display messages in terminal
     /**
      * opens the file browser window
      */
@@ -204,6 +205,8 @@ public class FileBrowser {
      */
     private void displayFiles(List<FileRecord> files) {
         fileGrid.getChildren().clear(); //clear previous cards
+        missingFileCount = 0;
+
         //create card for each file to add to grid
         for (FileRecord file : files) {
             //return a vbox containing file parameters and add to flowpane
@@ -211,9 +214,18 @@ public class FileBrowser {
             fileGrid.getChildren().add(card);
         }
 
-        //status update
+        //status update + count
         String folderText = folderComboBox.getValue();
-        statusLabel.setText("Showing " + files.size() + " files from: " + folderText);
+        String statusText = ("Showing " + files.size() + " files from: " + folderText);
+
+        if (missingFileCount > 0) {
+            statusText += missingFileCount + " files missing";
+        }
+        statusLabel.setText(statusText);
+
+        if (missingFileCount > 0 ) { // print to console
+            System.out.println(missingFileCount + " files missing");
+        }
     }
 
     /**
@@ -323,16 +335,25 @@ public class FileBrowser {
     private ImageView getThumbnail(FileRecord file) {
         // check if it's an image
         String ext = file.getFileExt();
+        if (ext == null || ext.isEmpty()) {
+            return createPlaceholderIcon();
+        }
+
         ext = ext.toLowerCase();
 
-        boolean isImage = ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png") || ext.equals("gif") || ext.equals("raw") || ext.equals("nef") || ext.equals("raf");
+        boolean isImage = ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png") || ext.equals(".gif") || ext.equals(".raw") || ext.equals(".nef") || ext.equals(".raf");
+
+        if (!isImage) {
+            return createPlaceholderIcon();
+        }
         // if image build path and check cache
         String fullPath = file.getFolderPath() + File.separator + file.getFileName();
+
         Image cachedImage = thumbnailCache.get(fullPath);
         if (cachedImage != null) { // if in cache return
             ImageView imageView = new ImageView(cachedImage);
-            imageView.setFitHeight(70);
-            imageView.setFitWidth(70);
+            imageView.setFitHeight(75);
+            imageView.setFitWidth(75);
             imageView.setPreserveRatio(true);
             return imageView;
         }
@@ -342,38 +363,48 @@ public class FileBrowser {
             File imageFile = new File(fullPath);
             // does it not exist?
             if (!imageFile.exists()) {
-                System.out.println("File " + fullPath + " does not exist");
-                return null;
+                missingFileCount++;
+                return createPlaceholderIcon();
             }
             // checks if file size is more than 50mb (may change depending on how slow/fast it is and ram usage)
             long fileSizeBytes = imageFile.length();
             long maxSize = 50 * 1024 * 1024;
             if (fileSizeBytes > maxSize) {
                 System.out.println("File " + fullPath + " is too large");
-                return null;
+                return createPlaceholderIcon();
             }
             //load the image
             FileInputStream fileInputStream = new FileInputStream(imageFile);
             // create an iamge with auto resize
-            Image thumbnail = new Image(fileInputStream, 86, 86, true, true);
+            Image thumbnail = new Image(fileInputStream, 75, 75, true, true);
             fileInputStream.close();
             //cache the thumbnail
             thumbnailCache.put(fullPath, thumbnail);
             // create and return imageview
-            ImageView imageView = new ImageView();
-            imageView.setFitHeight(86);
-            imageView.setFitWidth(86);
+            ImageView imageView = new ImageView(thumbnail);
+            imageView.setFitHeight(75);
+            imageView.setFitWidth(75);
             imageView.setPreserveRatio(true);
-            // add depth with css??
+
+            // add more css??
 
             return imageView;
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Error loading thumbnail for: " + fullPath);
             e.printStackTrace();
-            return null;
+            return createPlaceholderIcon();
         }
+
+    }
+    // display placehorder with colored rectangle as background
+    private ImageView createPlaceholderIcon() {
+        ImageView placeholder = new ImageView();
+        placeholder.setFitHeight(86);
+        placeholder.setFitWidth(86);
+        placeholder.setStyle("-fx-border-color: #DDDDDD; -fx-border-width: 1px;");
+        return placeholder;
+
     }
 
 }

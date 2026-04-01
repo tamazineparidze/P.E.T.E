@@ -1,4 +1,4 @@
-// 2.27 - why is it not working....
+// 2.28 - Thumbnails load.
 
 package org.example;
 
