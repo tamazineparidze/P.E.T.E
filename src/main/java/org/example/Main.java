@@ -1,4 +1,4 @@
-// 2.28 - Thumbnails load.
+// 3.01 - started filtering.
 
 package org.example;
 
