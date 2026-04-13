@@ -32,6 +32,7 @@ public class FileBrowser {
     private FlowPane fileGrid; // flowpanes hold grid of files
     private ComboBox<String> folderComboBox; // combobox holds dropdown to select what folder to view
     private Label statusLabel;
+    private FilterPanel filterPanel;
     // data components
     private Map<String, Integer> folderMap; //maps folder path to file id
     private List<FileRecord> allFiles; //list of every file from database (loaded once)
