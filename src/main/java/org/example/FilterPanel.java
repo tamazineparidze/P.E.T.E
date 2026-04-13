@@ -36,9 +36,9 @@ public class FilterPanel extends HBox {
                 "Documents",
                 "Other"
         );
-        fileTypeComboBox.setValue("All Types"); // Default value to make it easy to filter
+        fileTypeComboBox.setValue("All Types");
         fileTypeComboBox.setPrefWidth(150);
-        fileTypeComboBox.setOnAction(e -> ())//Filter change method make separate file?;
+        fileTypeComboBox.setOnAction(e -> notifyFilterChange());
 
         // File size filter
         Label sizeLabel = new Label("Size:");
@@ -52,10 +52,21 @@ public class FilterPanel extends HBox {
         );
         fileSizeComboBox.setValue("All Sizes");
         fileSizeComboBox.setPrefWidth(150);
-        fileTypeComboBox.setOnAction(e -> ())
+        fileTypeComboBox.setOnAction(e -> notifyFilterChange());
 
         this.getChildren().addAll(
                 filterLabel, typeLabel, fileTypeComboBox, sizeLabel, fileSizeComboBox);
     }
 
+    /** Sets callback to be called when a filter change happens */
+    public void setOnFilterChange(Runnable callback) {
+        this.onFilterChange = callback;
+    }
+
+    /** Notifies parent that filter was changed, called when I change dropdown */
+    private void notifyFilterChange() {
+        if (onFilterChange != null) {
+            onFilterChange.run();
+        }
+    }
 }
