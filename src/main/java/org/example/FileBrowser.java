@@ -23,105 +23,104 @@ import java.util.*;
 import java.util.List;
 
 /**
- * grid view for browsing the files that were indexed filtered by folder
+ * Main grid view for browsing the files that were indexed.
  */
+
 public class FileBrowser {
 
-    private static final String DB_URL = "jdbc:sqlite:pete.db"; // same db url throughout
-    // ui components
-    private FlowPane fileGrid; // flowpanes hold grid of files
-    private ComboBox<String> folderComboBox; // combobox holds dropdown to select what folder to view
-    private Label statusLabel;
-    private FilterPanel filterPanel;
-    // data components
-    private Map<String, Integer> folderMap; //maps folder path to file id
-    private List<FileRecord> allFiles; //list of every file from database (loaded once)
-    private Map<String, Image> thumbnailCache; // one time delay of opening images then its in memory
+    private static final String DB_URL = "jdbc:sqlite:pete.db";
 
-    private int missingFileCount = 0; //track missing files so it doesnt take a year to display messages in terminal
-    /**
-     * opens the file browser window
-     */
+    // ----- Ui & Data components ----- //
+    private FlowPane fileGrid; // The flexible grid that has the file cards
+    private ComboBox<String> folderComboBox; // Dropdown for folder searches
+    private FilterPanel filterPanel; // Custom dropdowns for type and size filtering
+    private Label statusLabel; // Status label showing basic file info
+
+    private Map<String, Integer> folderMap; // Maps folder names to DB ID
+    private List<FileRecord> allFiles; // Local cache of all files to make filtering quick
+    private Map<String, Image> thumbnailCache; // Prevents reloading images from disk
+    private int missingFileCount = 0; // Tracks if files in DB were moved or deleted from disk
+
+    /** opens the file browser window and triggers data load */
     public void show() {
         Stage stage = new Stage();
         stage.setTitle("P.E.T.E. - Browse Files");
-        Label folderLabel = new Label("Folder: "); //label next to dropdown
 
-        thumbnailCache = new HashMap<>(); //initialize thumbnailscache
+        thumbnailCache = new HashMap<>();
 
-        // dropdown combobox (dropdown menu itself)
+        // ----- 1: Very top - Folder section ----- //
+        Label folderLabel = new Label("Folder: ");
+
         folderComboBox = new ComboBox<>();
         folderComboBox.setPrefWidth(350);
-        folderComboBox.setOnAction((e) -> filterByFolder());
+        // Whenever folder changes, refresh the file grid (repeated below)
+        folderComboBox.setOnAction(e -> applyFilters());
 
         HBox topHBox = new HBox();
         topHBox.setPadding(new Insets(12));
         topHBox.setAlignment(Pos.CENTER_LEFT);
         topHBox.getChildren().addAll(folderLabel, folderComboBox);
 
-        // grid representation of files with flowpane
-        fileGrid = new FlowPane();
+        // ----- 2: Top - Filters ----- //
+        filterPanel = new FilterPanel();
+        filterPanel.setOnFilterChange(() -> applyFilters());
 
+        // ----- 3: Middle - File Grid ----- //
+        fileGrid = new FlowPane();
         fileGrid.setHgap(8);
         fileGrid.setVgap(8);
         fileGrid.setPadding(new Insets(8));
         fileGrid.setAlignment(Pos.TOP_LEFT);
 
-        // a scroller to scroll through many files with a white background
+        // Wrapped the grid in a ScrollPane for browsing many files
         ScrollPane scrollPane = new ScrollPane(fileGrid);
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-background-color: white;");
 
-        // bottom - status pane
+        // ----- 4: Bottom - Status label ----- //
         statusLabel = new Label("Loading...");
         statusLabel.setStyle("-fx-font-size:11px; fx-text-fill: gray;");
         statusLabel.setPadding(new Insets(12));
 
-        //layout for borderpane and how the filebrowser will be divided
+        // Assembly: Top to middle to bottom
+        VBox topSection = new VBox();
+        topSection.getChildren().addAll(topHBox, filterPanel);
+
         BorderPane root = new BorderPane();
-        root.setTop(topHBox);
+        root.setTop(topSection);
         root.setCenter(scrollPane);
         root.setBottom(statusLabel);
 
-        // load folders list for the combobox dropdown, load files from database, and display files in the grid
+        // Load folders list, files, and display
         loadFolders();
         loadAllFiles();
-        displayFiles(allFiles);
+        applyFilters();
 
         Scene scene = new Scene(root, 1150, 800);
         stage.setScene(scene);
         stage.show();
     }
 
-    /**
-     * loads folders from database and fills the dropdown selection
-     */
+    /** loads folders from database and fills the dropdown selection */
     private void loadFolders() {
 
-        folderMap = new HashMap<>(); // stores folderpath as string and folderid as integer
-
-        //sql to get all folders alphabetically
+        folderMap = new HashMap<>();
         String sql = "SELECT folder_id, path_name FROM folder ORDER BY path_name";
 
-        // try database connection, sql executor, and query results - pasted from dbviewer.java
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
-            // add all files option
             folderComboBox.getItems().add("All Files");
 
-            //map all files to
-            folderMap.put("All Files", -1); //-1 means show all
+            folderMap.put("All Files", -1);
 
-            //loop through the database
             while (rs.next()) {
                 int folderId = rs.getInt("folder_id");
                 String folderPath = rs.getString("path_name");
                 folderComboBox.getItems().add(folderPath);
                 folderMap.put(folderPath, folderId);
             }
-
             folderComboBox.getSelectionModel().selectFirst();
 
         } catch (Exception e) {
@@ -130,9 +129,7 @@ public class FileBrowser {
         }
     }
 
-    /**
-     * load files from database & join file and folder tables
-     */
+    /** load files from database & join file and folder tables */
     private void loadAllFiles() {
         allFiles = new ArrayList<>();
 
@@ -176,29 +173,30 @@ public class FileBrowser {
         }
     }
 
-    /**
-     * filters files based on the selected dropdown folder
-     */
-    private void filterByFolder() {
-        // get currently selected folder from dropdown that returns whatever user selects
+    /** filters files based on the selected FILTER */
+    private void applyFilters() {
+        List<FileRecord> filtered = new ArrayList<>(allFiles);
+        // First filter - folder
         String selectedFolder = folderComboBox.getValue();
-
-        // check if all files is selected and show everything if so, else filter specifically
-        if (selectedFolder.equals("All Files")) {
-            displayFiles(allFiles);
-        } else {
-            // make empty list for filtered files
-            List<FileRecord> filteredFiles = new ArrayList<>();
-
-            //loop through all files and check if file folder matches select folder
-            for (FileRecord file : allFiles) {
-                if (file.getFolderPath().equals(selectedFolder)) {
-                    filteredFiles.add(file);
-                }
-            }
-            //display only the filtered ones
-            displayFiles(filteredFiles);
+        if (selectedFolder != null && !selectedFolder.equals("All Files")) {
+            // Remove files that do NOT match the selected folder
+            filtered.removeIf(file -> !file.getFolderPath().equals(selectedFolder));
         }
+
+        // Second filter - by file type
+        String selectedType = filterPanel.getSelectedFileType();
+        if (!selectedType.equals("All Types")) {
+            filtered.removeIf(file -> !FilterUtils.matchesFileType(file, selectedType));
+        }
+
+        // Third filter - by file size
+        String selectedSize = filterPanel.getSelectedFileSize();
+        if (!selectedSize.equals("All Sizes")) {
+            filtered.removeIf(file -> !FilterUtils.matchesFileSize(file, selectedSize));
+        }
+
+        displayFiles(filtered);
+
     }
 
     /**

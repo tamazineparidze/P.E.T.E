@@ -3,23 +3,25 @@ package org.example;
 /**
  * Static util methods for filtering
  */
-
 public class FilterUtils {
 
+    /** Checks if file matches selected type filter */
     public static boolean matchesFileType(FileRecord file, String typeFilter) {
-        // If all types, everything matches
+        // 1. If all types is picked or no filter is set, everything matches
         if (typeFilter == null || typeFilter.equals("All Types")) {
             return true;
         }
 
+        // 2. Get the extension and label files for no extension
         String ext = file.getFileExt();
         if (ext == null || ext.isEmpty()) {
-            return typeFilter.equals("Other");
+            return typeFilter.equals("Other"); // The no extensions
         }
 
-        ext = ext.toLowerCase();
+        ext = ext.toLowerCase(); // Make lowercase to filter regardless of upper/lowercase
 
-        switch (typeFilter) { // figure out how to make this less annoying
+        // 3. Categorization - compare the extension to known file extensions for that type of file
+        switch (typeFilter) { /** make compact */
             case "Images":
                 return ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png") ||
                         ext.equals(".gif") || ext.equals(".heic") || ext.equals(".webp") ||
@@ -42,24 +44,65 @@ public class FilterUtils {
                         !matchesFileType(file, "Audio") &&
                         !matchesFileType(file, "Documents");
 
-            default:
+            default: // If filter type thats not recognizesd is passed, default to showing the file
                 return true;
         }
     }
 
-    public static boolean MatchesFileSize(FileRecord file, String sizeFilter) {
+    /** Checks if file matches selected size filter */
+    public static boolean matchesFileSize(FileRecord file, String sizeFilter) {
         // If all sizes, everything matches
         if (sizeFilter == null || sizeFilter.equals("All Sizes")) {
             return true;
         }
 
-        // Parse formatted size back to bytes.
-        // new method for parsing files to bytes
+        // 1. Parse formatted size back to bytes.
+        String sizeString = file.getFileSize();
+        long bytes = parseFileSizetoBytes(sizeString);
+
+        // 2. Make range categories to define boundaries between sizes
+        switch(sizeFilter) {
+            case "< 1 MB": // For my old digicam
+                return bytes < 1024 * 1024;
+            case "1 - 10 MB": // Usual smartphone
+                return bytes >= 1024 * 1024 && bytes < 10 * 1024 * 1024;
+            case "10 - 100 MB": // Mirorless camera
+                return bytes >= 10 * 1024 * 1024 && bytes < 100 * 1024 * 1024;
+            case "> 100 MB": // High MP raw photos
+                return bytes > 100 * 1024 * 1024;
+                default:
+                    return true;
+        }
 
     }
+
+    /** Converts formatted size to bytes */
     public static long parseFileSizetoBytes(String sizeString) {
+        try {
+            // 1. Split into number and unit (800 and Kilobytes)
+            String[] parts = sizeString.split(" ");
+            if (parts.length != 2) {
+                return 0;
+            }
 
+            double value = Double.parseDouble(parts[0]);
+            String unit = parts[1];
 
+            // 2. Apply the multiplier based on size
+            switch (unit) { /** make nicer looking */
+                case "B":
+                    return (long) value;
+                case "KB":
+                    return (long) value * 1024;
+                case "MB":
+                    return (long) value * 1024 * 1024;
+                case "GB":
+                    return (long) value * 1024 * 1024 * 1024;
+                default:
+                    return 0;
+            }
+        } catch (Exception e) {
+            return 0;
+        }
     }
-
 }
