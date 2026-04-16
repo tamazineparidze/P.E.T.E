@@ -1,74 +1,61 @@
-// creates database schema and runs at the beginning
-
 package org.example;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
+/**
+ * Initializes SQLite database and defines tables/columns.
+ */
+
 public class DatabaseSetup {
+    private static final String DB_URL = "jdbc:sqlite:pete.db"; // Proper protocol and filename
 
-    // file location as a private static final
-    private static final String DB_URL = "jdbc:sqlite:pete.db"; // proper protocol, database, and filename
-
-    /**
-     * main method which calls CreateTables
-     */
     public static void main(String[] args) {
         System.out.println("Setting up P.E.T.E. database...\n");
         createTables();
     }
 
+    /** Executes Sql commands to build folder and file tables. */
     public static void createTables() {
-        // connects to pete.db
-        try (Connection conn = DriverManager.getConnection(DB_URL); // opens connection to pete.db
-             Statement stmt = conn.createStatement()) { // creates statement to execute sql
-            // when try block ends automatically closes stmt and conn
-
-            // create folde table if not there with following parameters
+        // Opens connection to pete.db and makes it if it doesn't exist
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement()) {
+            // 1. Folder table, stores the directories that are scanned
             String createFolderTable = """
                 CREATE TABLE IF NOT EXISTS folder ( 
-                    folder_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    path_name TEXT NOT NULL UNIQUE,
-                    date_indexed DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    total_files INTEGER DEFAULT 0
+                    folder_id INTEGER PRIMARY KEY AUTOINCREMENT,            -- Unique ID for every folder
+                    path_name TEXT NOT NULL UNIQUE,                         -- Path string
+                    date_indexed DATETIME DEFAULT CURRENT_TIMESTAMP,        -- Current time
+                    total_files INTEGER DEFAULT 0                           -- Tracks # of files
                 )
                 """;
 
-            stmt.execute(createFolderTable); // sends sql to database
+            stmt.execute(createFolderTable);
             System.out.println("Folder table created");
 
-            // same thing for file table
-            // auto increment, filename required, extension (can be null), filesize in bytes...
+            // 2. File table, stores metadata for every file
             String createFileTable = """
                 CREATE TABLE IF NOT EXISTS file (
-                    file_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    file_name TEXT NOT NULL,
-                    file_ext TEXT,
-                    file_size INTEGER,
-                    resolution TEXT,
-                    date_modified DATETIME,
-                    folder_id INTEGER NOT NULL,
+                    file_id INTEGER PRIMARY KEY AUTOINCREMENT,              -- Unique ID for file
+                    file_name TEXT NOT NULL,                                -- 'fred.jpg'
+                    file_ext TEXT,                                          -- '.jpg'
+                    file_size INTEGER,                                      -- Size (in bytes)
+                    resolution TEXT,                                        -- Placeholder for image data
+                    date_modified DATETIME,                                 -- Last modified date
+                    folder_id INTEGER NOT NULL,                             -- ID of folder this file is in
                     FOREIGN KEY (folder_id) REFERENCES folder(folder_id)
                 )
                 """;
-            // foreign key constraint enforces data integrity because every file should point to a folder
 
             stmt.execute(createFileTable);
             System.out.println("File table created");
 
-            System.out.println("\nDatabase setup complete!"); // folder and file are done
+            System.out.println("\nDatabase setup complete!");
 
-        } catch (Exception e) { // if any error in try block, run this
+        } catch (Exception e) {
             System.out.println("Error setting up database:");
             e.printStackTrace();
         }
     }
 }
-
-/**
- * For me: remember to give lines the apporporiate properties.
- * final, static, identifiers, constraints
- * if stuck and found a solution that you did not think of look at the reference
- * and understand WHY it works and how to not get stuck in a similar situation again.
- */

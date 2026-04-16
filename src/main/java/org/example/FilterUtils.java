@@ -3,9 +3,10 @@ package org.example;
 /**
  * Static util methods for filtering
  */
+
 public class FilterUtils {
 
-    /** Checks if file matches selected type filter */
+    /** Checks if file matches selected type filter. */
     public static boolean matchesFileType(FileRecord file, String typeFilter) {
         // 1. If all types is picked or no filter is set, everything matches
         if (typeFilter == null || typeFilter.equals("All Types")) {
@@ -44,12 +45,12 @@ public class FilterUtils {
                         !matchesFileType(file, "Audio") &&
                         !matchesFileType(file, "Documents");
 
-            default: // If filter type thats not recognizesd is passed, default to showing the file
+            default: // If filter type that's not recognized is passed, default to showing the file
                 return true;
         }
     }
 
-    /** Checks if file matches selected size filter */
+    /** Checks if file matches selected size filter. */
     public static boolean matchesFileSize(FileRecord file, String sizeFilter) {
         // If all sizes, everything matches
         if (sizeFilter == null || sizeFilter.equals("All Sizes")) {
@@ -58,7 +59,7 @@ public class FilterUtils {
 
         // 1. Parse formatted size back to bytes.
         String sizeString = file.getFileSize();
-        long bytes = parseFileSizetoBytes(sizeString);
+        long bytes = parseFileSizeToBytes(sizeString);
 
         // 2. Make range categories to define boundaries between sizes
         switch(sizeFilter) {
@@ -76,8 +77,8 @@ public class FilterUtils {
 
     }
 
-    /** Converts formatted size to bytes */
-    public static long parseFileSizetoBytes(String sizeString) {
+    /** Converts formatted size to bytes. */
+    public static long parseFileSizeToBytes(String sizeString) {
         try {
             // 1. Split into number and unit (800 and Kilobytes)
             String[] parts = sizeString.split(" ");

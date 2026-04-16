@@ -41,7 +41,7 @@ public class FileBrowser {
     private Map<String, Image> thumbnailCache; // Prevents reloading images from disk
     private int missingFileCount = 0; // Tracks if files in DB were moved or deleted from disk
 
-    /** opens the file browser window and triggers data load */
+    /** Opens the file browser window and triggers data load */
     public void show() {
         Stage stage = new Stage();
         stage.setTitle("P.E.T.E. - Browse Files");
@@ -101,7 +101,7 @@ public class FileBrowser {
         stage.show();
     }
 
-    /** loads folders from database and fills the dropdown selection */
+    /** Loads folders from database and fills the dropdown selection. */
     private void loadFolders() {
 
         folderMap = new HashMap<>();
@@ -129,11 +129,9 @@ public class FileBrowser {
         }
     }
 
-    /** load files from database & join file and folder tables */
+    /** Load files from database & performs SQL join to get complete file + folder paths. */
     private void loadAllFiles() {
         allFiles = new ArrayList<>();
-
-        // sql join to combine file and folder info into one query
         String sql = """
                 SELECT
                     file.file_id,
@@ -147,12 +145,10 @@ public class FileBrowser {
                 JOIN folder ON file.folder_id = folder.folder_id
                 ORDER BY file.file_name
                 """;
-        // same as before
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
                  while (rs.next()) {
-                     // create filerecord from database
                      FileRecord record = new FileRecord(
                              rs.getInt("file_id"),
                              rs.getString("file_name"),
@@ -164,32 +160,30 @@ public class FileBrowser {
 
                      allFiles.add(record);
                  }
-
                  System.out.println(" Loaded " + allFiles.size() + " files");
-
         } catch (Exception e) {
                  System.out.println("Error loading file browser");
                  e.printStackTrace();
         }
     }
 
-    /** filters files based on the selected FILTER */
+    /** Filters files based on the selected filter & updates grid. */
     private void applyFilters() {
         List<FileRecord> filtered = new ArrayList<>(allFiles);
-        // First filter - folder
+        // 1. Specific folder filter
         String selectedFolder = folderComboBox.getValue();
         if (selectedFolder != null && !selectedFolder.equals("All Files")) {
             // Remove files that do NOT match the selected folder
             filtered.removeIf(file -> !file.getFolderPath().equals(selectedFolder));
         }
 
-        // Second filter - by file type
+        // 2. File category (Images, Video, Audio...)
         String selectedType = filterPanel.getSelectedFileType();
         if (!selectedType.equals("All Types")) {
             filtered.removeIf(file -> !FilterUtils.matchesFileType(file, selectedType));
         }
 
-        // Third filter - by file size
+        // 3. Size range (< 1 MB, 10 - 100 MB...)
         String selectedSize = filterPanel.getSelectedFileSize();
         if (!selectedSize.equals("All Sizes")) {
             filtered.removeIf(file -> !FilterUtils.matchesFileSize(file, selectedSize));
@@ -199,37 +193,32 @@ public class FileBrowser {
 
     }
 
-    /**
-     * filters files in grid
-     */
+    /** Clears grid and replaces it with filtered results. */
     private void displayFiles(List<FileRecord> files) {
-        fileGrid.getChildren().clear(); //clear previous cards
+        fileGrid.getChildren().clear(); // Clear previous cards
         missingFileCount = 0;
 
-        //create card for each file to add to grid
+        // 1. Loop through results and create a card per file
         for (FileRecord file : files) {
-            //return a vbox containing file parameters and add to flowpane
             VBox card = createFileCard(file);
             fileGrid.getChildren().add(card);
         }
 
-        //status update + count
+        // 2. Update status bar on bottom
         String folderText = folderComboBox.getValue();
         String statusText = ("Showing " + files.size() + " files from: " + folderText);
 
         if (missingFileCount > 0) {
-            statusText += missingFileCount + " files missing";
+            statusText += missingFileCount + " files missing from disk.";
         }
         statusLabel.setText(statusText);
 
-        if (missingFileCount > 0 ) { // print to console
+        if (missingFileCount > 0 ) {
             System.out.println(missingFileCount + " files missing");
         }
     }
 
-    /**
-     * Create a visual card for singular file returns vbox w paramteres
-     */
+    /** Create a visual card for singular file and adds hover + click listeners. */
     private VBox createFileCard(FileRecord file) {
         VBox card = new VBox(8);
         card.setAlignment(Pos.CENTER);
@@ -244,7 +233,7 @@ public class FileBrowser {
 
         ImageView thumbnail = getThumbnail(file);
 
-        //filename truncated if too long
+        // Truncate long filenames so cards don't get messy
         String displayName = file.getFileName();
         if (displayName.length() > 10) {
             displayName = displayName.substring(0, 8) + "...";
@@ -254,17 +243,15 @@ public class FileBrowser {
         nameLabel.setStyle("-fx-font-size: 11px; -fx-font-weight: bold;");
         nameLabel.setWrapText(true);
 
-        //filesize
         Label sizeLabel = new Label(file.getFileSize());
         sizeLabel.setStyle("-fx-font-size: 11px;  -fx-text-fill: gray;");
 
-        //extensions
         Label extLabel = new Label(file.getFileExt());
         extLabel.setStyle("-fx-font-size: 10px;");
 
         card.getChildren().addAll(thumbnail, nameLabel, sizeLabel, extLabel);
 
-        //when mouse enters card area
+        // Highlight card on hover
         card.setOnMouseEntered(e -> {
             card.setStyle(
                     "-fx-border-color: #329AFB; " +
@@ -275,7 +262,7 @@ public class FileBrowser {
             card.setCursor(javafx.scene.Cursor.HAND);
         });
 
-        //when mouse leaves card area
+        // De-highlight on exit
         card.setOnMouseExited(e -> {
             card.setStyle(
                     "-fx-border-color: #CCCCCC; " +
@@ -286,9 +273,8 @@ public class FileBrowser {
             card.setCursor(javafx.scene.Cursor.DEFAULT);
         });
 
-        //double click to open
+        // Double click = open file
         card.setOnMouseClicked(e -> {
-            //get double click info
             if (e.getClickCount() == 2) {
                 openFile(file); // method below
             }
@@ -297,23 +283,21 @@ public class FileBrowser {
         return card;
     }
 
-    /**
-     * Opens file using default application
-     */
+    /** Opens file using default application of OS. */
     private void openFile(FileRecord file) {
         try {
-            // combine filepath and filename and create file object
+            // 1. Combine filepath and filename and create file object
             String fullPath = file.getFolderPath() + File.separator + file.getFileName();
             File fileToOpen = new File(fullPath);
 
-            // checks if file exists
+            // 2. Checks if file exists
             if (!fileToOpen.exists()) {
                 System.out.println("File " + fullPath + " does not exist");
                 statusLabel.setText("File " + fullPath + " not found");
                 return;
             }
 
-            // checks if desktop default app is supported and opens with default app
+            // 3. Checks if desktop default app is supported and opens with default app
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().open(fileToOpen);
 
@@ -322,71 +306,64 @@ public class FileBrowser {
                 System.out.println("Opening " + fullPath + " not supported");
             }
 
-        } catch (Exception e) { // cant open / error
+        } catch (Exception e) {
             System.out.println("Error opening: " + file.getFileName());
             e.printStackTrace();
             statusLabel.setText("Error opening: " + file.getFileName());
         }
     }
-    /**
-     * add thumbnail or some kind of symbol to finish it off.
-     */
+
+    /** Manage image loading/caching. */
     private ImageView getThumbnail(FileRecord file) {
-        // check if it's an image
         String ext = file.getFileExt();
         if (ext == null || ext.isEmpty()) {
             return createPlaceholderIcon();
         }
 
         ext = ext.toLowerCase();
-
+        // 1. Check if file is a image format
+        /** There's gotta be a way to make this neater */
         boolean isImage = ext.equals(".jpg") || ext.equals(".jpeg") || ext.equals(".png") || ext.equals(".gif") || ext.equals(".raw") || ext.equals(".nef") || ext.equals(".raf");
 
         if (!isImage) {
             return createPlaceholderIcon();
         }
-        // if image build path and check cache
-        String fullPath = file.getFolderPath() + File.separator + file.getFileName();
 
+        String fullPath = file.getFolderPath() + File.separator + file.getFileName();
+        // 2. Check RAM cache for efficiency
         Image cachedImage = thumbnailCache.get(fullPath);
-        if (cachedImage != null) { // if in cache return
+        if (cachedImage != null) { // If in cache return
             ImageView imageView = new ImageView(cachedImage);
             imageView.setFitHeight(75);
             imageView.setFitWidth(75);
             imageView.setPreserveRatio(true);
             return imageView;
         }
-        // if not in cache load it
-        // figure out how to load it
+        // 3. Load from disk if not cached
         try {
             File imageFile = new File(fullPath);
-            // does it not exist?
             if (!imageFile.exists()) {
                 missingFileCount++;
                 return createPlaceholderIcon();
             }
-            // checks if file size is more than 50mb (may change depending on how slow/fast it is and ram usage)
+            // Skip large files to prevent errors
             long fileSizeBytes = imageFile.length();
             long maxSize = 50 * 1024 * 1024;
             if (fileSizeBytes > maxSize) {
                 System.out.println("File " + fullPath + " is too large");
                 return createPlaceholderIcon();
             }
-            //load the image
+            // Load the image & resize to save memory
             FileInputStream fileInputStream = new FileInputStream(imageFile);
-            // create an iamge with auto resize
             Image thumbnail = new Image(fileInputStream, 75, 75, true, true);
             fileInputStream.close();
-            //cache the thumbnail
+
             thumbnailCache.put(fullPath, thumbnail);
-            // create and return imageview
+
             ImageView imageView = new ImageView(thumbnail);
             imageView.setFitHeight(75);
             imageView.setFitWidth(75);
             imageView.setPreserveRatio(true);
-
-            // add more css??
-
             return imageView;
 
         } catch (Exception e) {
@@ -396,7 +373,7 @@ public class FileBrowser {
         }
 
     }
-    // display placehorder with colored rectangle as background
+    /** Make generic icon for missing files. */
     private ImageView createPlaceholderIcon() {
         ImageView placeholder = new ImageView();
         placeholder.setFitHeight(86);

@@ -1,17 +1,16 @@
-// a file from db for display in tableview, runs when DBviewer loads data
-
 package org.example;
 
-import javafx.beans.property.*; // imports multiple classes
+import javafx.beans.property.*; // Imports multiple classes
+
+/**
+ * FileRecord represents a single row from the database.
+ * 'Properties' are needed so JavaFX can properly read the info.
+ */
 
 public class FileRecord {
 
-    /**
-     * FileRecord represents one file from the database
-     * a normall class with normall parameters will not work with tableview
-     */
-
-    // private String fileName; would not work, tableview needs its own unique properties
+    // Private String fileName; would not work, tableview needs its own unique properties
+    // Properties are final despite data inside them changing.
     private final IntegerProperty fileId;
     private final StringProperty fileName;
     private final StringProperty fileExt;
@@ -19,18 +18,18 @@ public class FileRecord {
     private final StringProperty dateModified;
     private final StringProperty folderPath;
 
-    // takes data from pete.db and converts it to a readable format
+    /** Takes DB data and converts it to readable UI format. */
     public FileRecord(int fileId, String fileName, String fileExt,
                       long fileSizeBytes, long dateModifiedTimestamp, String folderPath) {
         this.fileId = new SimpleIntegerProperty(fileId);
         this.fileName = new SimpleStringProperty(fileName);
         this.fileExt = new SimpleStringProperty(fileExt);
         this.fileSize = new SimpleStringProperty(formatFileSize(fileSizeBytes));
-        this.dateModified = new SimpleStringProperty(formatDate(dateModifiedTimestamp));
+        this.dateModified = new SimpleStringProperty(formatDate(dateModifiedTimestamp)); /** Need time filter. */
         this.folderPath = new SimpleStringProperty(folderPath);
     }
 
-    // property getters for javafx & tableview
+    // Property getters for javafx & tableview
     public IntegerProperty fileIdProperty() { return fileId; }
     public StringProperty fileNameProperty() { return fileName; }
     public StringProperty fileExtProperty() { return fileExt; }
@@ -38,7 +37,7 @@ public class FileRecord {
     public StringProperty dateModifiedProperty() { return dateModified; }
     public StringProperty folderPathProperty() { return folderPath; }
 
-    // normal getters in case it's needed (not for tableview)
+    // Normal getters (not for tableview)
     public int getFileId() { return fileId.get(); }
     public String getFileName() { return fileName.get(); }
     public String getFileExt() { return fileExt.get(); }
@@ -46,9 +45,8 @@ public class FileRecord {
     public String getDateModified() { return dateModified.get(); }
     public String getFolderPath() { return folderPath.get(); }
 
-    /**
-     *  instead of millions of bytes it's going to say 4.5 mb
-     */
+    /**  Bytes to normal units conversion. */
+    // Should go in helper methods file
     private String formatFileSize(long bytes) {
         if (bytes < 1024) {
             return bytes + " B";
@@ -61,15 +59,9 @@ public class FileRecord {
         }
     }
 
-    /**
-     *  makes timestamps readable
-     */
+    /** Makes timestamps readable. */
     private String formatDate(long timestamp) {
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(new java.util.Date(timestamp));
     }
 }
-
-/**
- * For me: Get more in depth understanding of how javafx properties work.
- */

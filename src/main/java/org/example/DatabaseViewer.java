@@ -1,5 +1,3 @@
-// creates a window that displas indexed files in a table, runs when "view database" is clicked
-
 package org.example;
 
 import javafx.collections.FXCollections;
@@ -16,22 +14,25 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+/**
+ * Manages the raw data window.
+ */
+
 public class DatabaseViewer {
 
-    private static final String DB_URL = "jdbc:sqlite:pete.db"; // samedb url throughout
+    private static final String DB_URL = "jdbc:sqlite:pete.db";
 
-    /**
-     * new window to show indexed files
-     */
+    /** New window to show database viewer. */
     public void show() {
         Stage stage = new Stage();
         stage.setTitle("P.E.T.E. - Database Viewer");
 
-        // display a filerecord object per row
+        // 1. Initialize tableview
         TableView<FileRecord> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // column shows string from filerecord. show header text. get filerecord object and filename property of object
+        // 2. Define columns and data mapping
+        // Each colimn needs to know what text its showing and which property from filerecord to extract
         TableColumn<FileRecord, String> fileNameCol = new TableColumn<>("File Name");
         fileNameCol.setCellValueFactory(data -> data.getValue().fileNameProperty());
         fileNameCol.setPrefWidth(200);
@@ -52,18 +53,17 @@ public class DatabaseViewer {
         folderPathCol.setCellValueFactory(data -> data.getValue().folderPathProperty());
         folderPathCol.setPrefWidth(300);
 
-        // add columns to table
+        // 3. Add columns to table
         tableView.getColumns().addAll(fileNameCol, fileExtCol, fileSizeCol, dateModifiedCol, folderPathCol);
 
-        // like arraylist (I dislike comp228) but javafx watches it for changes and updates automatically
+        // 4. Load Data
         ObservableList<FileRecord> fileRecords = loadFilesFromDatabase();
         tableView.setItems(fileRecords);
 
-        // status
+        // 5. UI
         Label statusLabel = new Label("Showing " + fileRecords.size() + " files");
         statusLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: gray;");
 
-        // layout & scene
         VBox root = new VBox(10);
         root.setPadding(new Insets(10));
         root.getChildren().addAll(tableView, statusLabel);
@@ -73,12 +73,9 @@ public class DatabaseViewer {
         stage.show();
     }
 
-    /**
-     * Loads all files from the database
-     */
+    /** Connects to Db and converts rows into filerecord object. */
     private ObservableList<FileRecord> loadFilesFromDatabase() {
-        ObservableList<FileRecord> records = FXCollections.observableArrayList(); // empty list
-        //sql join query
+        ObservableList<FileRecord> records = FXCollections.observableArrayList();
         String sql = """
             SELECT 
                 file.file_id,
@@ -91,14 +88,15 @@ public class DatabaseViewer {
             JOIN folder ON file.folder_id = folder.folder_id
             ORDER BY file.file_name
             """;
-        // try database connection, sql executor, and query results
+
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            // loops through rows
-            while (rs.next()) { // create file record take raw db values
+
+            // While going row by row, create a new java object.
+            while (rs.next()) {
                 FileRecord record = new FileRecord(
-                        rs.getInt("file_id"),       //1
+                        rs.getInt("file_id"),       // 1
                         rs.getString("file_name"),  // fred.jpg
                         rs.getString("file_ext"),   // .jpg
                         rs.getLong("file_size"),    // 1232349820
@@ -109,15 +107,10 @@ public class DatabaseViewer {
             }
             System.out.println("Loaded " + records.size() + " files from database");
 
-        } catch (Exception e) { // if error print details, return whatever was loaded
+        } catch (Exception e) {
             System.out.println("Error loading files:");
             e.printStackTrace();
         }
         return records;
     }
 }
-
-/**
- * For me: Display of javafx visuals makes sense, lacking depth on sql join and interactions with resultset
- * get a better understanding of column extraction and how data binds to UI
- */

@@ -1,4 +1,4 @@
-// 3.03 - finish utils and clean up all of the comments.
+// 3.11 - Make comments readable.
 
 package org.example;
 
@@ -13,67 +13,69 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import java.io.File;
 
-public class Main extends Application { // inheritance, child(main) extends to parent(application)
+/**
+ * Entrypoint for P.E.T.E. - indexing and folder selection.
+ */
 
-    // ui labels for different parameters
+public class Main extends Application {
+
+    // ----- UI labels ----- //
     private Label folderLabel;
     private Label resultLabel;
     private Button selectButton;
     private Button scanButton;
 
-    // folder path select
+    // ----- Stores absolute path of directory ----- //
     private String selectedFolderPath = null;
 
-    // indexer instance
+    // ----- Logic for scanning and saving files to Pete.DB ----- //
     private FileIndexer indexer = new FileIndexer();
 
+    /** Primary window for P.E.T.E. */
     @Override
-    public void start(Stage primaryStage) { //javafx startpoint
+    public void start(Stage primaryStage) {
 
-        // title label
+        // UI header
         Label titleLabel = new Label("P.E.T.E. - Personal Electronic Tagging Engine");
         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        // folder select button
+        // Folder select button
         selectButton = new Button("Select Folder");
         selectButton.setPrefWidth(100);
+        // Lambda -> when clicked open OS folder select screen
         selectButton.setOnAction(e -> selectFolder(primaryStage));
-        // lambda expression, when clicked call selectFolder method with primary stage argument
 
-        // shows selected folderpath
+        // Folder selection label
         folderLabel = new Label("No folder selected");
         folderLabel.setStyle("-fx-text-fill: gray;");
 
-        // start scan button
+        // Start scan button
         scanButton = new Button("Start Scan");
         scanButton.setPrefWidth(100);
-        scanButton.setDisable(true); // disabled if nothing's selected
+        scanButton.setDisable(true); // Disabled if nothing's selected
         scanButton.setOnAction(e -> startScan());
 
-        /**
-         * Decided to keep the view database button instead of replacing it
-         */
-
-        // browse files button
+        // Browse files button
         Button browseButton = new Button("Browse Files");
         browseButton.setPrefWidth(100);
         browseButton.setOnAction(e -> openFileBrowser());
 
-        // view database button
+        // View database button
         Button viewDatabaseButton = new Button("(Database)");
         viewDatabaseButton.setPrefWidth(73);
         viewDatabaseButton.setOnAction(e -> openDatabaseViewer());
 
-        // result label (shows progress)
+        // Status area
         resultLabel = new Label("");
         resultLabel.setStyle("-fx-font-size: 18px;");
 
-        // layout
+        // Layout assembly
         VBox root = new VBox(20);
         root.setPadding(new Insets(30));
-        root.setAlignment(Pos.CENTER); // centered with 20x30 padding
+        root.setAlignment(Pos.CENTER);
 
-        root.getChildren().addAll( // add all components to Vbox top to bottom
+        // Components in order from top to bottom
+        root.getChildren().addAll(
                 titleLabel,
                 selectButton,
                 folderLabel,
@@ -83,84 +85,78 @@ public class Main extends Application { // inheritance, child(main) extends to p
                 resultLabel
         );
 
-        // scene & stage
+        // Final scene display
         Scene scene = new Scene(root, 500, 400);
         primaryStage.setTitle("P.E.T.E. - MVP2.18");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    /**
-     * opens folder picker
-     */
+    /** Opens a native folder picker. */
     private void selectFolder(Stage stage) {
         DirectoryChooser directoryChooser = new DirectoryChooser(); // javafx's folder picker
         directoryChooser.setTitle("Select Folder to Index");
 
-        // starts folder search at default location
-        directoryChooser.setInitialDirectory(new File(System.getProperty("user.home"))); // home folder (C:/Users/fred)
+        // Starts folder search at default 'home' location
+        directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 
-        // show dialog and wait for me to pick a folder, return null if operation cancelled
         File selectedFolder = directoryChooser.showDialog(stage);
-        // when operation is open the code is paused
+
+        // Store path and update the button to reflect current state
         if (selectedFolder != null) {
-            selectedFolderPath = selectedFolder.getAbsolutePath();  // save full path to instance variable
-            folderLabel.setText("Selected: " + selectedFolderPath); // update label to show what's selected
-            folderLabel.setStyle("-fx-text-fill: black;");          // was gray, now black
-            scanButton.setDisable(false);                     // then enable the scan button to be clicked
-            resultLabel.setText(""); // clears previous results
+            selectedFolderPath = selectedFolder.getAbsolutePath();
+            folderLabel.setText("Selected: " + selectedFolderPath);
+            folderLabel.setStyle("-fx-text-fill: black;");
+            scanButton.setDisable(false);
+            resultLabel.setText("");
         }
     }
 
-    /**
-     * Starts the file scanning process
-     */
+    /** Starts the indexing process. */
     private void startScan() {
-        // don't scan if no folder's selected
+        // Can't scan if no folder is selected
         if (selectedFolderPath == null) {
             resultLabel.setText("Please select a folder first!");
             resultLabel.setStyle("-fx-text-fill: orange;");
             return;
         }
 
-        // disable buttons so you cant rescan & get a message instead
+        // Prevent multiple scans at once
         selectButton.setDisable(true);
         scanButton.setDisable(true);
         resultLabel.setText("Scanning folder...");
         resultLabel.setStyle("-fx-text-fill: blue;");
 
-        // run scan in background because if file is large you don't want a frozen window! - make background thread
+        // Run scan in background, else if file is large, window will be frozen! - Make background thread.
         new Thread(() -> {
             int filesIndexed = indexer.scanFolder(selectedFolderPath);
             javafx.application.Platform.runLater(() -> {
                 resultLabel.setText("Scan complete! Indexed " + filesIndexed + " files.");
                 resultLabel.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
 
-                // re-enable the buttons
                 selectButton.setDisable(false);
                 scanButton.setDisable(false);
             });
         }).start();
     }
 
-    /**
-     * opens database viewer window
-     */
+    /** Opens database window. */
     private void openDatabaseViewer() {
         DatabaseViewer viewer = new DatabaseViewer();
         viewer.show();
     }
 
+    /** Opens file browser window. */
     private void openFileBrowser() {
         FileBrowser fileBrowser = new FileBrowser();
         fileBrowser.show();
     }
 
+    /** Amen */
     public static void main(String[] args) {
-        // check database
         System.out.println("Checking database setup...");
         DatabaseSetup.createTables();
         System.out.println();
-        launch(args); // launch favafx
+        launch(args);
     }
 }

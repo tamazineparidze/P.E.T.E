@@ -17,7 +17,7 @@ public class FilterPanel extends HBox {
     private ComboBox<String> fileSizeComboBox;
     private Runnable onFilterChange;
 
-    /** Filter panel with type and size filters */
+    /** Filter panel with type and size filters. */
     public FilterPanel() {
         // 1. Make HBox parameters
         this.setSpacing(15);
@@ -61,24 +61,24 @@ public class FilterPanel extends HBox {
                 filterLabel, typeLabel, fileTypeComboBox, sizeLabel, fileSizeComboBox);
     }
 
-    /** Sets callback to be called when a filter change happens */
+    /** Sets callback to be called when a filter change happens. */
     public void setOnFilterChange(Runnable callback) {
         this.onFilterChange = callback;
     }
 
-    /** Notifies parent that filter was changed, called when dropdown is changed */
+    /** Notifies parent that filter was changed, called when dropdown is changed. */
     private void notifyFilterChange() {
         if (onFilterChange != null) {
             onFilterChange.run();
         }
     }
 
-    /** Gets the selected file type filter (Video) */
+    /** Gets the selected file type filter (Video). */
     public String getSelectedFileType() {
         return fileTypeComboBox.getValue();
     }
 
-    /** Gets the selected file size filter (10 - 100 MB) */
+    /** Gets the selected file size filter (10 - 100 MB). */
     public String getSelectedFileSize() {
         return fileSizeComboBox.getValue();
     }
