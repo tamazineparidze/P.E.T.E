@@ -87,7 +87,7 @@ public class Main extends Application {
 
         // Final scene display
         Scene scene = new Scene(root, 500, 400);
-        primaryStage.setTitle("P.E.T.E. - MVP2.18");
+        primaryStage.setTitle("P.E.T.E. - MVP3.11");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
