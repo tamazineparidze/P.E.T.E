@@ -35,18 +35,23 @@ public class FileBrowser {
     private ComboBox<String> folderComboBox; // Dropdown for folder searches
     private FilterPanel filterPanel; // Custom dropdowns for type and size filtering
     private Label statusLabel; // Status label showing basic file info
+    private MetadataPanel metadataPanel;
 
     private Map<String, Integer> folderMap; // Maps folder names to DB ID
     private List<FileRecord> allFiles; // Local cache of all files to make filtering quick
     private Map<String, Image> thumbnailCache; // Prevents reloading images from disk
     private int missingFileCount = 0; // Tracks if files in DB were moved or deleted from disk
+    private Stage browserStage;
 
     /** Opens the file browser window and triggers data load */
     public void show() {
         Stage stage = new Stage();
         stage.setTitle("P.E.T.E. - Browse Files");
 
+        this.browserStage = stage;
         thumbnailCache = new HashMap<>();
+
+        metadataPanel = new MetadataPanel();
 
         // ----- 1: Very top - Folder section ----- //
         Label folderLabel = new Label("Folder: ");
@@ -260,6 +265,13 @@ public class FileBrowser {
                             "-fx-padding: 8;"
             );
             card.setCursor(javafx.scene.Cursor.HAND);
+
+            metadataPanel.setText("File: " + file.getFileName());
+
+            double x = card.localToScreen(card.getBoundsInLocal()).getMinX() + 110; // Good spot for now, tweak Y later
+            double y = card.localToScreen(card.getBoundsInLocal()).getMinY();
+
+            metadataPanel.show(browserStage, x, y);
         });
 
         // De-highlight on exit
@@ -271,6 +283,8 @@ public class FileBrowser {
                             "-fx-padding: 8;"
             );
             card.setCursor(javafx.scene.Cursor.DEFAULT);
+
+            metadataPanel.hide();
         });
 
         // Double click = open file
