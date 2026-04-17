@@ -15,6 +15,7 @@ public class FilterPanel extends HBox {
     // The dropdowns and callback, hold state of current filter selection and logic passed from parent
     private ComboBox<String> fileTypeComboBox;
     private ComboBox<String> fileSizeComboBox;
+    private ComboBox<String> fileTimeComboBox;  /** FILE TIME FOR FUTURE */
     private Runnable onFilterChange;
 
     /** Filter panel with type and size filters. */
@@ -56,6 +57,10 @@ public class FilterPanel extends HBox {
         fileSizeComboBox.setValue("All Sizes");
         fileSizeComboBox.setPrefWidth(150);
         fileSizeComboBox.setOnAction(e -> notifyFilterChange()); // Similar to previous trigger method
+
+        // 000 Extra Add later
+        Label timeLabel = new Label("Time:"); /** FILE TIME FOR FUTURE */
+
 
         this.getChildren().addAll(
                 filterLabel, typeLabel, fileTypeComboBox, sizeLabel, fileSizeComboBox);
