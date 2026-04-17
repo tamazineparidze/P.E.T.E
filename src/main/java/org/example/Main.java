@@ -1,4 +1,4 @@
-// 4.01 - View metadata file started and comments for future filter idea
+// 4.12 - Added the delay on hover
 
 package org.example;
 
@@ -87,7 +87,7 @@ public class Main extends Application {
 
         // Final scene display
         Scene scene = new Scene(root, 500, 400);
-        primaryStage.setTitle("P.E.T.E. - MVP3.11");
+        primaryStage.setTitle("P.E.T.E. - MVP4.11");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

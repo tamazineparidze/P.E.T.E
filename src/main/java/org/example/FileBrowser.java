@@ -266,12 +266,13 @@ public class FileBrowser {
             );
             card.setCursor(javafx.scene.Cursor.HAND);
 
+            // Start the timer
             metadataPanel.setText("File: " + file.getFileName());
 
             double x = card.localToScreen(card.getBoundsInLocal()).getMinX() + 110; // Good spot for now, tweak Y later
             double y = card.localToScreen(card.getBoundsInLocal()).getMinY();
 
-            metadataPanel.show(browserStage, x, y);
+            metadataPanel.startTimer(browserStage, x, y);
         });
 
         // De-highlight on exit
@@ -284,7 +285,8 @@ public class FileBrowser {
             );
             card.setCursor(javafx.scene.Cursor.DEFAULT);
 
-            metadataPanel.hide();
+            // Stop countdown upon leaving hover
+            metadataPanel.cancelTimer();
         });
 
         // Double click = open file
