@@ -23,10 +23,11 @@ public class MetadataPanel {
     public MetadataPanel() {
         // Create popup, container, label, and hover
         popup = new Popup();
+        popup.setAutoHide(true);
 
         VBox container = new VBox();
         container.setPadding(new Insets(10, 10, 10, 10));
-        container.setStyle("-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1px;");
+        container.setStyle("-fx-background-color: white; -fx-border-color: gray; -fx-border-width: 2px;");
 
         messageLabel = new Label("Popup");
 
@@ -58,9 +59,14 @@ public class MetadataPanel {
         popup.show(window, posX, posY);
     }
 
-    /** Sets what text to show. */
-    public void setText(String text) {
-        messageLabel.setText(text);
+    /** Shows filedata to display. */
+    public void setFileData(FileRecord file) {
+        String info = "File:  " + file.getFileName() + "\n" +
+                "Size:  " + file.getFileSize() + "\n" +
+                "Type:  " + file.getFileExt() + "\n" +
+                "Modified:  " + file.getDateModified() + "\n";
+
+        messageLabel.setText(info);
     }
 
     /** Hides the popup. */

@@ -266,8 +266,8 @@ public class FileBrowser {
             );
             card.setCursor(javafx.scene.Cursor.HAND);
 
-            // Start the timer
-            metadataPanel.setText("File: " + file.getFileName());
+            // Start the timer + set file data
+            metadataPanel.setFileData(file);
 
             double x = card.localToScreen(card.getBoundsInLocal()).getMinX() + 110; // Good spot for now, tweak Y later
             double y = card.localToScreen(card.getBoundsInLocal()).getMinY();

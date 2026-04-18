@@ -1,4 +1,4 @@
-// 4.12 - Added the delay on hover
+// 4.2 - shows different file metadata! needs css tweaks.
 
 package org.example;
 
