@@ -3,6 +3,7 @@ package org.example;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
@@ -15,7 +16,10 @@ public class FilterPanel extends HBox {
     // The dropdowns and callback, hold state of current filter selection and logic passed from parent
     private ComboBox<String> fileTypeComboBox;
     private ComboBox<String> fileSizeComboBox;
-    private ComboBox<String> fileTimeComboBox;  /** FILE TIME FOR FUTURE */
+
+    private DatePicker fromDatePicker;
+    private DatePicker toDatePicker;
+
     private Runnable onFilterChange;
 
     /** Filter panel with type and size filters. */
@@ -58,12 +62,22 @@ public class FilterPanel extends HBox {
         fileSizeComboBox.setPrefWidth(150);
         fileSizeComboBox.setOnAction(e -> notifyFilterChange()); // Similar to previous trigger method
 
-        // 000 Extra Add later
-        Label timeLabel = new Label("Time:"); /** FILE TIME FOR FUTURE */
+        // 5. Date range filters
+        Label fromLabel = new Label("From:");
+        fromDatePicker = new DatePicker();
+        fromDatePicker.setPrefWidth(150);
+        fromDatePicker.setPromptText("Start Date");
+        fromDatePicker.setOnAction(e -> notifyFilterChange());
+
+        Label toLabel = new Label("To:");
+        toDatePicker = new DatePicker();
+        toDatePicker.setPrefWidth(150);
+        toDatePicker.setPromptText("End Date");
+        toDatePicker.setOnAction(e -> notifyFilterChange());
 
 
         this.getChildren().addAll(
-                filterLabel, typeLabel, fileTypeComboBox, sizeLabel, fileSizeComboBox);
+                filterLabel, typeLabel, fileTypeComboBox, sizeLabel, fileSizeComboBox, fromLabel, fromDatePicker, toLabel, toDatePicker);
     }
 
     /** Sets callback to be called when a filter change happens. */
