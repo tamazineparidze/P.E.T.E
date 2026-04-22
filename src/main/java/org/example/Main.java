@@ -1,4 +1,4 @@
-// #6.01 - Start adding one quick filter and start optimizing code. CHECKPOINT git messed up.
+// #6.02 - Checkpoint. Test. All good.
 
 package org.example;
 
