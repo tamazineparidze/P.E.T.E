@@ -1,5 +1,7 @@
 package org.example;
 
+import java.time.LocalDate;
+
 /**
  * Static util methods for filtering
  */
@@ -105,5 +107,47 @@ public class FilterUtils {
         } catch (Exception e) {
             return 0;
         }
+    }
+
+    public static boolean matchesDateRange(FileRecord file, LocalDate fromDate, LocalDate toDate) {
+        // 1. If both dates are null everything matches
+        if (fromDate == null && toDate == null) {
+            return true;
+        }
+
+        // 2. Get file's modification date and convert it
+        LocalDate fileDate = parseFileDate(file.getDateModified());
+
+        // 3. Check if file is within the bounds of the date
+        if (fileDate == null) { // Can't parse date, exclude from filter
+            return false;
+        }
+
+        if (fromDate != null && fileDate.isBefore(fromDate)) { // Check from date (file is before start date)
+            return false;
+        }
+
+        if (toDate != null && fileDate.isAfter(toDate)) { // Check to date (file is after end date)
+            return false;
+        }
+
+        return true;
+    }
+
+    public static LocalDate parseFileDate(String dateString) {
+        try {
+            // Filerecord has YYYY-MM-DD HH:MM:SS we only need the date
+            if (dateString == null || dateString.length() < 10) {
+                return null;
+            }
+
+            String datePart = dateString.substring(0, 10); // Extract just the date
+            return LocalDate.parse(datePart);
+
+    } catch (Exception e) {
+            System.out.println("Could not parse date: " + dateString);
+            return null;
+        }
+
     }
 }

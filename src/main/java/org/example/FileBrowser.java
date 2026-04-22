@@ -19,6 +19,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 
@@ -194,8 +195,15 @@ public class FileBrowser {
             filtered.removeIf(file -> !FilterUtils.matchesFileSize(file, selectedSize));
         }
 
-        displayFiles(filtered);
+        // 4. Date range (2/20/2025 - 4/9/2026)
+        LocalDate fromDate = filterPanel.getFromDate();
+        LocalDate toDate = filterPanel.getToDate();
 
+        if (fromDate != null || toDate != null) { // Apply if one date is set (at least)
+            filtered.removeIf(file -> !FilterUtils.matchesDateRange(file, fromDate, toDate));
+        }
+
+        displayFiles(filtered);
     }
 
     /** Clears grid and replaces it with filtered results. */

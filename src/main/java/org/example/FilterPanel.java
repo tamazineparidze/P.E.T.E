@@ -7,6 +7,8 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
+import java.time.LocalDate;
+
 /**
  * Filter panel that provides dropdown menus for type and size filters.
  */
@@ -100,5 +102,15 @@ public class FilterPanel extends HBox {
     /** Gets the selected file size filter (10 - 100 MB). */
     public String getSelectedFileSize() {
         return fileSizeComboBox.getValue();
+    }
+
+    /** Gets the selected from date. */
+    public LocalDate getFromDate() {
+        return fromDatePicker.getValue();
+    }
+
+    /** Gets the selected to date. */
+    public LocalDate getToDate() {
+        return toDatePicker.getValue();
     }
 }
