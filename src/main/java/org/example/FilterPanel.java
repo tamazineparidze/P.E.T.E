@@ -2,6 +2,7 @@ package org.example;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -77,9 +78,30 @@ public class FilterPanel extends HBox {
         toDatePicker.setPromptText("End Date");
         toDatePicker.setOnAction(e -> notifyFilterChange());
 
+        Button yesterdayButton = new Button("Yesterday");
+        yesterdayButton.setOnAction(e -> {
+            toDatePicker.setValue(LocalDate.now());
+            fromDatePicker.setValue(LocalDate.now().minusDays(1));
+            notifyFilterChange();
+        });
+
+        Button last7DaysButton = new Button("Last 7 days");
+        last7DaysButton.setOnAction(e -> {
+            toDatePicker.setValue(LocalDate.now());
+            fromDatePicker.setValue(LocalDate.now().minusDays(7));
+            notifyFilterChange();
+        });
+
+        Button lastMonthButton = new Button("Last Month");
+        lastMonthButton.setOnAction(e -> {
+            toDatePicker.setValue(LocalDate.now());
+            fromDatePicker.setValue(LocalDate.now().minusMonths(1));
+            notifyFilterChange();
+        });
+
 
         this.getChildren().addAll(
-                filterLabel, typeLabel, fileTypeComboBox, sizeLabel, fileSizeComboBox, fromLabel, fromDatePicker, toLabel, toDatePicker);
+                filterLabel, typeLabel, fileTypeComboBox, sizeLabel, fileSizeComboBox, fromLabel, fromDatePicker, toLabel, toDatePicker, yesterdayButton, last7DaysButton, lastMonthButton);
     }
 
     /** Sets callback to be called when a filter change happens. */

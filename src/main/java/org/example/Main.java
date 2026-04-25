@@ -1,4 +1,4 @@
-// #6.02 - Checkpoint. Test. All good.
+// #6.1 - Quick filters work. Start finalizing the MVP.
 
 package org.example;
 
