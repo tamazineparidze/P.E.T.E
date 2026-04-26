@@ -6,7 +6,16 @@
   <component name="ChangeListManager">
     <list default="true" id="054811a6-6c29-46b3-ac71-0d376321a39e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pete.db" beforeDir="false" afterPath="$PROJECT_DIR$/pete.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/DatabaseSetup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/DatabaseSetup.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/DatabaseViewer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/DatabaseViewer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/FileBrowser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/FileBrowser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/FileIndexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/FileIndexer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/FileRecord.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/FileRecord.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/FilterPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/FilterPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/FilterUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/FilterUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/MetadataPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/MetadataPanel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,6 +72,7 @@
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/nepar/Programming/Java/Projects/P.E.T.E&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/nepar/Programming/Java/P.E.T.E/src/main/java/org/example/Main.java&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;
   }

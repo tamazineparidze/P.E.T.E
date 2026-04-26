@@ -11,7 +11,7 @@ import javafx.scene.layout.HBox;
 import java.time.LocalDate;
 
 /**
- * Filter panel that provides dropdown menus for type and size filters.
+ * Filter panel that (is an HBOX and) provides dropdown menus for type and size filters.
  */
 
 public class FilterPanel extends HBox {
@@ -25,7 +25,7 @@ public class FilterPanel extends HBox {
 
     private Runnable onFilterChange;
 
-    /** Filter panel with type and size filters. */
+    /** Filter panel with type and size filters. */ // Add reset button
     public FilterPanel() {
         // 1. Make HBox parameters
         this.setSpacing(15);
@@ -85,6 +85,7 @@ public class FilterPanel extends HBox {
             notifyFilterChange();
         });
 
+        // 6. Quick filters
         Button last7DaysButton = new Button("Last 7 days");
         last7DaysButton.setOnAction(e -> {
             toDatePicker.setValue(LocalDate.now());
@@ -99,9 +100,20 @@ public class FilterPanel extends HBox {
             notifyFilterChange();
         });
 
+        // New reset button !
+        Button resetButton = new Button("X");
+        resetButton.setStyle("-fx-background-color: #FF0000");
+        resetButton.setOnAction(e -> {
+            fileTypeComboBox.setValue("All Types");
+            fileSizeComboBox.setValue("All Sizes");
+            fromDatePicker.setValue(null);
+            toDatePicker.setValue(null);
+            notifyFilterChange();
+        });
+
 
         this.getChildren().addAll(
-                filterLabel, typeLabel, fileTypeComboBox, sizeLabel, fileSizeComboBox, fromLabel, fromDatePicker, toLabel, toDatePicker, yesterdayButton, last7DaysButton, lastMonthButton);
+                filterLabel, typeLabel, fileTypeComboBox, sizeLabel, fileSizeComboBox, fromLabel, fromDatePicker, toLabel, toDatePicker, yesterdayButton, last7DaysButton, lastMonthButton, resetButton);
     }
 
     /** Sets callback to be called when a filter change happens. */

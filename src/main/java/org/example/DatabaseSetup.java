@@ -16,7 +16,11 @@ public class DatabaseSetup {
         createTables();
     }
 
-    /** Executes Sql commands to build folder and file tables. */
+    /** Executes Sql commands to build folder and file tables.
+     *  Folder table - one row per scanned directory.
+     *  File table - one row per file found.
+     *  One folder --> many files relationship.
+     * */
     public static void createTables() {
         // Opens connection to pete.db and makes it if it doesn't exist
         try (Connection conn = DriverManager.getConnection(DB_URL);
@@ -35,15 +39,15 @@ public class DatabaseSetup {
             System.out.println("Folder table created");
 
             // 2. File table, stores metadata for every file
-            String createFileTable = """
+            String createFileTable = """ 
                 CREATE TABLE IF NOT EXISTS file (
                     file_id INTEGER PRIMARY KEY AUTOINCREMENT,              -- Unique ID for file
                     file_name TEXT NOT NULL,                                -- 'fred.jpg'
                     file_ext TEXT,                                          -- '.jpg'
                     file_size INTEGER,                                      -- Size (in bytes)
-                    resolution TEXT,                                        -- Placeholder for image data
+                    resolution TEXT,                                        -- Placeholder for image data (NOT IN USE as of now)
                     date_modified DATETIME,                                 -- Last modified date
-                    folder_id INTEGER NOT NULL,                             -- ID of folder this file is in
+                    folder_id INTEGER NOT NULL,                             -- ID of folder this file is in 
                     FOREIGN KEY (folder_id) REFERENCES folder(folder_id)
                 )
                 """;

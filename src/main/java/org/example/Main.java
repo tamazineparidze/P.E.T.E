@@ -1,4 +1,4 @@
-// #6.1 - Quick filters work. Start finalizing the MVP.
+// #6.3 - Finalizing MVP - Major bug fixes
 
 package org.example;
 
@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import java.io.File;
 
 /**
- * Entrypoint for P.E.T.E. - indexing and folder selection.
+ * Entrypoint for P.E.T.E.
  */
 
 public class Main extends Application {
@@ -68,6 +68,7 @@ public class Main extends Application {
         // Status area
         resultLabel = new Label("");
         resultLabel.setStyle("-fx-font-size: 18px;");
+        resultLabel.setStyle("-fx-font-weight: bold;");
 
         // Layout assembly
         VBox root = new VBox(20);
@@ -94,7 +95,7 @@ public class Main extends Application {
 
     /** Opens a native folder picker. */
     private void selectFolder(Stage stage) {
-        DirectoryChooser directoryChooser = new DirectoryChooser(); // javafx's folder picker
+        DirectoryChooser directoryChooser = new DirectoryChooser(); // Javafx's folder picker
         directoryChooser.setTitle("Select Folder to Index");
 
         // Starts folder search at default 'home' location

@@ -23,31 +23,40 @@ public class FileIndexer {
     /** Open database connection and recursive search */
     public int scanFolder(String folderPath) {
         System.out.println("Starting scan of: " + folderPath);
-        // Opens connection to database & closes when done
+
         try (Connection conn = DriverManager.getConnection(DB_URL)) {
 
-            // 1. Add folder into the folder table
-            int folderId = insertFolder(conn, folderPath);
-            System.out.println("Folder ID: " + folderId);
-
-            // 2. Get every single file in this folder (recursively)
+            // 1. Get every single file (recursively)
             List<File> files = getAllFiles(new File(folderPath));
-            System.out.println("Found " + files.size() + " files"); // gets count
+            System.out.println("Found " + files.size() + " files");
 
-            // 3. Loop through results and save metadata to pete.db
+            // 2. Map to cache folder IDs so we don't hammer the database
+            java.util.Map<String, Integer> folderCache = new java.util.HashMap<>();
             int filesIndexed = 0;
-            for (File file : files) {
-                insertFile(conn, file, folderId);
-                filesIndexed++;
 
-                // Every 100th file, print an update
-                if (filesIndexed % 100 == 0) {
-                    System.out.println("Indexed " + filesIndexed + " files...");
+            // 3. Loop through results
+            for (File file : files) {
+                // Get the ACTUAL parent directory of this specific file
+                String trueParentPath = file.getParent();
+
+                int currentFolderId;
+
+                // Check if we already found the ID for this subfolder
+                if (folderCache.containsKey(trueParentPath)) {
+                    currentFolderId = folderCache.get(trueParentPath);
+                } else {
+                    // If not, insert it to database and save the ID to cache
+                    currentFolderId = insertFolder(conn, trueParentPath);
+                    folderCache.put(trueParentPath, currentFolderId);
                 }
+
+                // Insert the file using its TRUE subfolder ID
+                insertFile(conn, file, currentFolderId);
+                filesIndexed++;
             }
 
-            // 4. Update total files column in folder table
-            updateFolderCount(conn, folderId, filesIndexed);
+            // 4. Update the total_files count for ALL folders at once
+            updateAllFolderCounts(conn);
 
             System.out.println("Scan complete! Indexed " + filesIndexed + " files");
             return filesIndexed;
@@ -108,8 +117,20 @@ public class FileIndexer {
         return fileList;
     }
 
-    /** Inserts file metadata to file table. */
+    /** Inserts file metadata to file table. */ // Implemented with duplicate FILE checker.
     private void insertFile(Connection conn, File file, int folderId) throws Exception {
+
+        // Before inserting a file, check if a row exists w the same name filename and folderid. IF IT DOES SKIP.
+        String checkSql = "SELECT folder_id FROM file WHERE file_name = ? AND folder_id = ?";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+            checkStmt.setString(1, file.getName());
+            checkStmt.setInt(2, folderId);
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next()) {
+                return;
+            }
+        }
+
         String sql = "INSERT INTO file (file_name, file_ext, file_size, date_modified, folder_id) " +
                 "VALUES (?, ?, ?, ?, ?)";
 
@@ -132,12 +153,10 @@ public class FileIndexer {
     }
 
     /** Updates the folder total files count (often times many folders will be scanned). */
-    private void updateFolderCount(Connection conn, int folderId, int fileCount) throws Exception {
-        String sql = "UPDATE folder SET total_files = ? WHERE folder_id = ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, fileCount);
-            pstmt.setInt(2, folderId);
-            pstmt.executeUpdate();
+    private void updateAllFolderCounts(Connection conn) throws Exception { // Optimized
+        String sql = "UPDATE folder SET total_files = (SELECT COUNT(*) FROM file WHERE file.folder_id = folder.folder_id)";
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(sql);
         }
     }
 

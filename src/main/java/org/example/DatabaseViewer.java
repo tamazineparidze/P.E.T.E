@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 /**
- * Manages the raw data window.
+ * Manages the raw data window. Read only window that shows a peek at the database files.
  */
 
 public class DatabaseViewer {

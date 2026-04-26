@@ -3,7 +3,7 @@ package org.example;
 import java.time.LocalDate;
 
 /**
- * Static util methods for filtering
+ * Static util methods for filtering. No UI. Every method takes input and returns value(s).
  */
 
 public class FilterUtils {

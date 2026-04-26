@@ -3,6 +3,7 @@ package org.example;
 import javafx.beans.property.*; // Imports multiple classes
 
 /**
+ * Data transfer - Takes raw raw db row and makes it usable in JavaFx through Tableview.
  * FileRecord represents a single row from the database.
  * 'Properties' are needed so JavaFX can properly read the info.
  */

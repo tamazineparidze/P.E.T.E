@@ -8,7 +8,7 @@ import javafx.stage.Popup;
 import javafx.util.Duration;
 
 /**
- * Shows detailed file info when hovering for 3 seconds
+ * Shows detailed file info when hovering for 1 second (3 is way too much
  */
 
 public class MetadataPanel {

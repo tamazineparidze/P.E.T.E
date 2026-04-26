@@ -18,6 +18,8 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
@@ -32,16 +34,16 @@ public class FileBrowser {
     private static final String DB_URL = "jdbc:sqlite:pete.db";
 
     // ----- Ui & Data components ----- //
-    private FlowPane fileGrid; // The flexible grid that has the file cards
-    private ComboBox<String> folderComboBox; // Dropdown for folder searches
-    private FilterPanel filterPanel; // Custom dropdowns for type and size filtering
-    private Label statusLabel; // Status label showing basic file info
+    private FlowPane fileGrid;                  // The flexible grid that has the file cards
+    private ComboBox<String> folderComboBox;    // Dropdown for folder searches
+    private FilterPanel filterPanel;            // Custom dropdowns for type and size filtering
+    private Label statusLabel;                  // Status label showing basic file info
     private MetadataPanel metadataPanel;
 
-    private Map<String, Integer> folderMap; // Maps folder names to DB ID
-    private List<FileRecord> allFiles; // Local cache of all files to make filtering quick
-    private Map<String, Image> thumbnailCache; // Prevents reloading images from disk
-    private int missingFileCount = 0; // Tracks if files in DB were moved or deleted from disk
+    private Map<String, Integer> folderMap;     // Maps folder names to DB ID
+    private List<FileRecord> allFiles;          // Local cache of all files to make filtering quick
+    private Map<String, Image> thumbnailCache;  // Prevents reloading images from disk
+    private int missingFileCount = 0;           // Tracks if files in DB were moved or deleted from disk
     private Stage browserStage;
 
     /** Opens the file browser window and triggers data load */
@@ -311,8 +313,10 @@ public class FileBrowser {
     private void openFile(FileRecord file) {
         try {
             // 1. Combine filepath and filename and create file object
-            String fullPath = file.getFolderPath() + File.separator + file.getFileName();
-            File fileToOpen = new File(fullPath);
+            Path path = Paths.get(file.getFolderPath(), file.getFileName()); // Updated
+            File fileToOpen = path.toFile();
+
+            String fullPath = fileToOpen.getAbsolutePath();
 
             // 2. Checks if file exists
             if (!fileToOpen.exists()) {
@@ -365,7 +369,9 @@ public class FileBrowser {
         }
         // 3. Load from disk if not cached
         try {
-            File imageFile = new File(fullPath);
+            Path path = Paths.get(file.getFolderPath(), file.getFileName()); // Updated
+            File imageFile = path.toFile();
+
             if (!imageFile.exists()) {
                 missingFileCount++;
                 return createPlaceholderIcon();
@@ -378,9 +384,8 @@ public class FileBrowser {
                 return createPlaceholderIcon();
             }
             // Load the image & resize to save memory
-            FileInputStream fileInputStream = new FileInputStream(imageFile);
-            Image thumbnail = new Image(fileInputStream, 75, 75, true, true);
-            fileInputStream.close();
+            String imageUri = imageFile.toURI().toString();
+            Image thumbnail = new Image(imageUri, 75, 75, true, true);
 
             thumbnailCache.put(fullPath, thumbnail);
 
