@@ -1,4 +1,4 @@
-// #6.3 - Finalizing MVP - Major bug fixes
+// #6.4 - Tested & Finalized MVP
 
 package org.example;
 
